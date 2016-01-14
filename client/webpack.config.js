@@ -16,7 +16,7 @@ module.exports = {
     loaders: [
       {
         test: /\.js$/, // look for .js at end of file
-        exclude: ["node_modules"], // so we don't process all of those
+        exclude: /node_modules/, // so we don't process all of those
         loader: 'babel',
         query: {
           presets: ['es2015', 'react'] // preloaders
