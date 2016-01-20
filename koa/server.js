@@ -1,6 +1,7 @@
 var koa = require('koa')
 var router = require('koa-router')
 var mount = require('koa-mount')
+var cors = require('koa-cors');
 
 
 // Middleware and helpers 
@@ -12,6 +13,7 @@ var http = require('http')
 var r = require('rethinkdb')
 
 var posts = require('./controllers/posts')
+var bins = require('./controllers/bins')
 
 var config = require(__dirname+"/config.js")
 
@@ -20,6 +22,8 @@ var config = require(__dirname+"/config.js")
 var app = koa()
 require('koa-qs')(app)
 
+app.use(cors())
+
 var MetaInspector = require('node-metainspector')
 
 // Thank the Lord for http://zef.me/blog/6096/callback-free-harmonious-node-js
@@ -27,32 +31,38 @@ var MetaInspector = require('node-metainspector')
 
 var getURL = function *(next){
 
-  var url = this.url.replace('/title/?url=','')
+  try {
+    // var url = this.url.replace('/title/?url=','')
+    var url = this.query.url    
+    var client = new MetaInspector(url, { timeout: 5000 })
 
-  var client = new MetaInspector(url, { timeout: 5000 })
-
-  // var fetch = thunkify(client.on('fetch'))
-
-  var clientListener = function(){
-    return function(callback) {
-      client.on('fetch', callback)
+    // var fetch = thunkify(client.on('fetch'))
+    var clientListener = function(){
+      return function(callback) {
+        client.on('fetch', callback)
+        client.on('error', callback)
+      }
     }
+    client.fetch()
+    yield clientListener()
+    // try {
+    //   throw "file too large"
+    // }
+    // catch (e) {
+    //   console.log(e)
+    //   this.body = 'File too large'
+    // }
+
+    this.body = {'title': client.title, 'ogTitle': client.ogTitle, 'host': client.host, 'image': client.image}
+    // console.log(client)
+
   }
-
-  client.fetch()
-
-  yield clientListener()
-  // try {
-  //   throw "file too large"
-  // }
-  // catch (e) {
-  //   console.log(e)
-  //   this.body = 'File too large'
-  // }
-
-
-  this.body = {'title': client.title, 'ogTitle': client.ogTitle, 'host': client.host, 'image': client.image}
-  // console.log(client)
+  catch (e) {
+    console.log('error')
+    this.status = 500
+    this.body = e.message || http.STATUS_CODES[this.status]
+  }
+  
   
 }
 
@@ -166,16 +176,16 @@ r.connect(config.rethinkdb, function(err, conn) {
         })
     })
 
-    r.table('posts').indexWait('binId_timestamp').run(conn).then(function(err, result) {
+    r.table('posts').indexWait('binSlug_createdAt').run(conn).then(function(err, result) {
         console.log("posts table ready, checking bin table...")
     }).error(function(err) {
         // The database/table/index was not available, create them
         r.dbCreate(config.rethinkdb.db).run(conn).finally(function() {
             return r.tableCreate('posts').run(conn)
         }).finally(function() {
-            r.table('posts').indexCreate('binId_timestamp', [r.row('binId'), r.row('timestamp')]).run(conn)
+            r.table('posts').indexCreate('binSlug_createdAt', [r.row('binSlug'), r.row('createdAt')]).run(conn)
         }).finally(function(result) {
-            r.table('posts').indexWait('binId_timestamp').run(conn)
+            r.table('posts').indexWait('binSlug_createdAt').run(conn)
         }).then(function(result) {
             console.log("post table and index created, checking bin table...")
             // conn.close()
@@ -229,8 +239,12 @@ var API = new router()
 API.get('/title/', getURL)
 API.get('/posts/get', posts.all)
 API.put('/posts/create', posts.create)
-API.post('/todo/update', update)
-API.post('/todo/delete', del)
+// API.del('/posts/delete', posts.delete)
+API.get('/posts/toggleReaction', posts.toggleReaction)
+// API.post('/todo/delete', del)
+
+API.get('/bins/all', bins.getBins)
+API.put('/bins/create', bins.create)
 
 app.use(createConnection)
 
