@@ -1,4 +1,4 @@
-const config = {
+module.exports = {
     rethinkdb: {
         host: "localhost",
         port: 28015,
@@ -9,5 +9,3 @@ const config = {
         port: 3000
     }
 }
-
-export default config

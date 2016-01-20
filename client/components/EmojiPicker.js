@@ -25,14 +25,11 @@ export default class EmojiPicker extends Component {
     
     return (
       <div className="emoji-picker-wrapper">
-        
         <div 
           className={ this.state.pickerIsOpen ? 'emoji-picker-button active' : 'emoji-picker-button'}
           onClick={this.togglePicker}>
           <img src={addReactionImg} />
         </div>
-
-        
 
         {this.state.pickerIsOpen ? (
           <div className="emoji-list-wrapper">

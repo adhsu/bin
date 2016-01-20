@@ -1,20 +1,11 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
-  "scripts": {
-    "start": "nodemon lib/app.js --exec babel-node --presets es2015,stage-0",
-    "build": "babel lib -d dist",
-    "serve": "node dist/app.js"
-  },
-  "author": "",
-  "license": "ISC",
+  "name": "todo",
+  "version": "0.0.2",
+  "private": true,
   "dependencies": {
-    "babel": "^6.3.26",
-    "babel-cli": "^6.4.0",
-    "body-parser": "^1.14.2",
-    "express": "^4.13.3",
+    "body-parser": "1.0.2",
+    "cors": "^2.7.1",
+    "express": "4.0.0",
     "nodemon": "^1.8.1",
     "rethinkdb": "^2.2.1"
   }

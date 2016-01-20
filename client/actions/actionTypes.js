@@ -1,0 +1,22 @@
+// action types
+export const TOGGLE_REACTION = 'TOGGLE_REACTION'
+export const SIGNUP = 'SIGNUP'
+export const LOGIN = 'LOGIN'
+export const LOGOUT = 'LOGOUT'
+export const OPEN_MODAL = 'OPEN_MODAL'
+export const CLOSE_MODAL = 'CLOSE_MODAL'
+export const DISPLAY_ERROR = 'DISPLAY_ERROR'
+export const CHANGE_IS_MOBILE = 'CHANGE_IS_MOBILE';
+export const CHANGE_WIDTH_AND_HEIGHT = 'CHANGE_WIDTH_AND_HEIGHT';
+
+export const REQUEST_POSTS = 'REQUEST_POSTS'
+export const RECEIVE_POSTS = 'RECEIVE_POSTS'
+
+export const REQUEST_TITLE = 'REQUEST_TITLE'
+export const RECEIVE_TITLE = 'RECEIVE_TITLE'
+
+export const REQUEST_NEW_POST = 'REQUEST_NEW_POST'
+export const RECEIVE_NEW_POST = 'RECEIVE_NEW_POST'
+
+export const REQUEST_DELETE_POST = 'REQUEST_DELETE_POST'
+export const RECEIVE_DELETE_POST = 'RECEIVE_DELETE_POST'

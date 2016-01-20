@@ -1,6 +1,7 @@
 // Import express
 var express = require('express');
 var bodyParser = require('body-parser');
+var cors = require('cors');
 var app = express();
 
 // Load config for RethinkDB and express
@@ -10,12 +11,13 @@ var r = require('rethinkdb');
 
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser());
+app.use(cors());
 
 // Middleware that will create a connection to the database
 app.use(createConnection);
 
 // Define main routes
-app.route('/todo/get').get(get);
+app.route('/posts/get').get(get);
 app.route('/todo/new').put(create);
 app.route('/todo/update').post(update);
 app.route('/todo/delete').post(del);
@@ -23,17 +25,31 @@ app.route('/todo/delete').post(del);
 // Middleware to close a connection to the database
 app.use(closeConnection);
 
+var postsPerPage = 5;
 
-/*
- * Retrieve all todos
- */
 function get(req, res, next) {
-    r.table('todos').orderBy({index: "createdAt"}).run(req._rdbConn).then(function(cursor) {
-        return cursor.toArray();
-    }).then(function(result) {
-        res.send(JSON.stringify(result));
-    }).error(handleError(res))
-    .finally(next);
+  
+  var binId = req.query.slug;
+  var userId = req.query.userId;
+  var timestamp = parseInt(req.query.createdat) || 9999999999999
+  var page = req.query.page || 1
+  console.log(req.query, binId, userId, timestamp, page)
+
+  r.table('posts')
+    .between([binId, r.minval], [binId, r.maxval], {index: 'binId_timestamp'})
+    .orderBy({index: r.desc('binId_timestamp')})
+    .filter(function (post) {
+      return post("timestamp").lt(timestamp);
+    })
+    .skip(postsPerPage*(page-1))
+    .limit(postsPerPage)
+    .run(req._rdbConn)
+    .then(function(cursor) {
+      return cursor.toArray();
+  }).then(function(result) {
+      res.send(JSON.stringify(result));
+  }).error(handleError(res))
+  .finally(next);
 }
 
 /*
@@ -114,45 +130,50 @@ function closeConnection(req, res, next) {
     req._rdbConn.close();
 }
 
+r.connect(config.rethinkdb, function(err, conn) {
+    startExpress()
+})
+
 /*
  * Create tables/indexes then start express
  */
-r.connect(config.rethinkdb, function(err, conn) {
-    if (err) {
-        console.log("Could not open a connection to initialize the database");
-        console.log(err.message);
-        process.exit(1);
-    }
+// r.connect(config.rethinkdb, function(err, conn) {
+//     if (err) {
+//         console.log("Could not open a connection to initialize the database");
+//         console.log(err.message);
+//         process.exit(1);
+//     }
 
-    r.table('todos').indexWait('createdAt').run(conn).then(function(err, result) {
-        console.log("Table and index are available, starting express...");
-        startExpress();
-    }).error(function(err) {
-        // The database/table/index was not available, create them
-        r.dbCreate(config.rethinkdb.db).run(conn).finally(function() {
-            return r.tableCreate('todos').run(conn)
-        }).finally(function() {
-            r.table('todos').indexCreate('createdAt').run(conn);
-        }).finally(function(result) {
-            r.table('todos').indexWait('createdAt').run(conn)
-        }).then(function(result) {
-            console.log("Table and index are available, starting express...");
-            startExpress();
-            conn.close();
-        }).error(function(err) {
-            if (err) {
-                console.log("Could not wait for the completion of the index `todos`");
-                console.log(err);
-                process.exit(1);
-            }
-            console.log("Table and index are available, starting express...");
-            startExpress();
-            conn.close();
-        });
-    });
-});
+//     r.table('todos').indexWait('createdAt').run(conn).then(function(err, result) {
+//         console.log("Table and index are available, starting express...");
+//         startExpress();
+//     }).error(function(err) {
+//         // The database/table/index was not available, create them
+//         r.dbCreate(config.rethinkdb.db).run(conn).finally(function() {
+//             return r.tableCreate('todos').run(conn)
+//         }).finally(function() {
+//             r.table('todos').indexCreate('createdAt').run(conn);
+//         }).finally(function(result) {
+//             r.table('todos').indexWait('createdAt').run(conn)
+//         }).then(function(result) {
+//             console.log("Table and index are available, starting express...");
+//             startExpress();
+//             conn.close();
+//         }).error(function(err) {
+//             if (err) {
+//                 console.log("Could not wait for the completion of the index `todos`");
+//                 console.log(err);
+//                 process.exit(1);
+//             }
+//             console.log("Table and index are available, starting express...");
+//             startExpress();
+//             conn.close();
+//         });
+//     });
+// });
 
 function startExpress() {
     app.listen(config.express.port);
     console.log('Listening on port '+config.express.port);
 }
+

@@ -1,4 +1,4 @@
-import {displayError} from '../actions'
+import {displayError} from '../actions/actions'
 
 const validatePaste = (data) => {
 
@@ -19,7 +19,6 @@ const validatePaste = (data) => {
   if (isUrl) {
     return {
       url: data,
-      timestamp: Date.now(),
       mediaType: getMediaType(data)
     }
 

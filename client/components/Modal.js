@@ -1,13 +1,17 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux';
+
 import Media from './Media'
-import {submitNewPost} from '../actions'
+import {submitNewPost} from '../actions/submit'
+import Loading from './Loading'
+import {modalSelector} from '../selectors/modalSelector'
+
 
 class Modal extends Component {
 
   constructor(props) {
     super(props);
-    this.submitPost = this.submitPost.bind(this);
+    this.submit = this.submit.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
     
     this.state = {
@@ -17,34 +21,35 @@ class Modal extends Component {
     
   }
 
-  asyncFetchTitle(url) {
-    // return fetch('http://textance.herokuapp.com/title/www.bbc.co.uk').then(function(response){return response.text()}).then(function(text){console.log(text)})
-    return fetch('http://textance.herokuapp.com/title/' + url).then(function(response){return response.text()}).then(function(text){console.log(text)})
-    return fetch(url, {
-      method: 'get',
-      mode: 'no-cors'
-    }).then(response => {
-      // console.log(Promise.resolve(response))
-      console.log(response)
-      console.log(response.text)
-      return response.text()
-      // this.refs.title.value = title 
-    }).then(text => {
-      console.log(text)
-      this.setState({titleIsLoading : false})
-      return text
-    })
-    // .then((response) => {
-    //   console.log(response)
-    //   return response.text()
-    // })
+  fetchTitle(url) {
+    fetch(`http://10.0.1.187:3000/api/title/?url=${url}`)
+      .then(response => {
+        if (response.ok) {
+          return response.json()
+        } else {
+          this.refs.title.focus()
+          console.log('fetch title network response not ok')
+        }
+      })
+      .then(json => {
+        console.log('fetchTitle ', url, json)
+        if (this.refs.title) {
+          console.log('state is ', this.state)
+          this.refs.title.value = json.ogTitle || json.title
+          this.setState({titleIsLoading : false})
+        }
+      })
+      .catch(error => {
+        this.setState({titleIsLoading : false})
+        this.refs.title.focus()
+        console.log('error with fetch title: ', error.message)
+      })
   }
 
   componentDidMount() {
     const {url} = this.props
 
-    this.asyncFetchTitle(url)
-
+    this.fetchTitle(url)
 
     document.addEventListener('keyup', this.handleKeyUp);
     document.body.classList.add('modal-open')
@@ -59,7 +64,7 @@ class Modal extends Component {
     switch(e.which) {
       case 13:
         // enter
-        this.submitPost()
+        this.submit()
       case 27:
         // esc
         this.props.closeModal()
@@ -68,18 +73,18 @@ class Modal extends Component {
     }
   }
 
-  submitPost() {
-    const {dispatch, title, url, timestamp, mediaType, closeModal} = this.props
-    const newPostData = {
-      id: timestamp,
+  submit() {
+    const {dispatch, binSlug, currentUser, closeModal, title, url, mediaType} = this.props
+    
+    const post = {
+      binSlug,
       url,
-      timestamp,
       mediaType,
       title: this.refs.title.value.trim(),
-      reactions: []
+      author: currentUser.id
     }
+    dispatch(submitNewPost(post))
     closeModal()
-    dispatch(submitNewPost(newPostData))
   }
 
   render() {
@@ -100,12 +105,14 @@ class Modal extends Component {
             </div>
           </div>
 
-          <input className="modal-title-input" type="text" ref="title" autofocus/>
-          { this.state.titleIsLoading ? <div>Loading</div> : null}
+          <div className="modal-title-input-wrapper">
+            <input className="modal-title-input" type="text" ref="title" />
+            { this.state.titleIsLoading ? <Loading className="modal-title-input-loading" size="35" /> : null}
+          </div>
         
           { mediaType ? <Media mediaType={mediaType} url={url}/> : null }
 
-          <div className="modal-submit" onClick={this.submitPost}>Press ⏎ to submit</div>
+          <div className="modal-submit" onClick={this.submit}>Press ⏎ to submit</div>
         </div>
 
 
@@ -114,9 +121,4 @@ class Modal extends Component {
   }
 } 
 
-
-function mapStateToProps(state) {
-  return {}
-}
-
-export default connect(mapStateToProps)(Modal)
+export default connect(modalSelector)(Modal);

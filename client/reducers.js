@@ -1,16 +1,41 @@
 import update from 'react-addons-update'
-import {combineReducers} from 'redux'
-import {SUBMIT_NEW_POST, TOGGLE_REACTION, DISPLAY_ERROR} from './actions'
-import initialState from './initialState'
+import { UPDATE_LOCATION } from 'redux-simple-router'
+import * as types from './actions/actionTypes';
 
 
-function posts(state=initialState.posts, action) {
+function posts(state={}, action) {
   switch(action.type) {
-    case SUBMIT_NEW_POST:
+
+    case types.RECEIVE_POSTS:
       
-      return Object.assign({}, state, {[Date.now()]: action.data})
+      if (!state[action.params.slug]) {
+        // if no posts from bin
+        // console.log('no posts in bin, posts are ', action.posts, state)
+        return Object.assign({}, state, {
+          [action.params.slug]: action.posts
+        })
+      } else {
+        // if already exists, push to end of array
+        // console.log('posts in bin already exist, pushing...')
+        return update(state, {
+          [action.params.slug]: {$push: action.posts}
+        })
+      }
+
+    case types.RECEIVE_NEW_POST:
+      console.log('received new post ', action.post, action.data)
+
+      return update(state, {
+        [action.data.binSlug]: {$unshift: [action.data]}
+      })
+
+    case types.REQUEST_DELETE_POST:
+      console.log('optimistically delete post')
+      return update(state, {
+        [action.binSlug]: {$splice: [[action.index, 1]]}
+      })
     
-    case TOGGLE_REACTION:
+    case types.TOGGLE_REACTION:
       const reactions = state[action.postId]['reactions']
       const reaction = reactions[action.emojiId]
       
@@ -57,24 +82,55 @@ function posts(state=initialState.posts, action) {
   }
 }
 
-function currentUser(state = initialState.currentUser, action) {
-  return state
-}
-
-function view(state = initialState.view, action) {
+function currentUser(state={}, action) {
   switch(action.type) {
-    case DISPLAY_ERROR:
-      return Object.assign({}, state, {error: action.message})
+    case types.UPDATE_LOCATION:
+      return state
+
     default:
       return state
   }
 }
 
-const rootReducer = combineReducers({
+function view(state={}, action) {
+  switch(action.type) {
+    case types.DISPLAY_ERROR:
+      return Object.assign({}, state, {error: action.message})
+    case types.REQUEST_POSTS:
+      console.log('isloading true')
+      return Object.assign({}, state, {isLoading: true})
+    case types.RECEIVE_POSTS:
+      console.log('isloading false')
+      return Object.assign({}, state, {isLoading: false})
+
+    case types.CHANGE_IS_MOBILE:
+      return Object.assign({}, state, {
+        isMobile: action.isMobile
+      });
+    case types.CHANGE_WIDTH_AND_HEIGHT:
+      return Object.assign({}, state, {
+        height: action.height,
+        width: action.width
+      });
+    default:
+      return state
+  }
+}
+
+function bins(state={}, action) {
+  return state
+}
+
+function users(state={}, action) {
+  return state
+}
+
+
+export default {
   posts,
   currentUser,
-  view
-})
-
-export default rootReducer 
+  view,
+  bins,
+  users
+}
 

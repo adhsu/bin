@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import emojis from '../helpers/emojis'
-import {toggleReaction} from '../actions'
+import {toggleReaction} from '../actions/actions'
 
 class Reaction extends Component {
 
