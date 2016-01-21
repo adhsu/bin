@@ -6,3 +6,4 @@ server/.DS_Store
 node_modules
 koa/node_modules
 koa/rethinkdb_data
+rethinkdb_data
