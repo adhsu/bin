@@ -1,5 +1,7 @@
 import 'whatwg-fetch'
 import * as types from './actionTypes';
+import {API_BASE_URL} from './../config'
+
 
 function requestTitle(url) {
   return {
@@ -24,7 +26,7 @@ export function fetchTitle(url) {
 
     return setTimeout( ()=> {
       
-      return fetch(`http://10.0.1.187:3000/api/title/?url=${url}`)
+      return fetch(`${API_BASE_URL}/title/?url=${url}`)
         .then(response => response.json())
         .then(json => {
           console.log('fetchTitle ', url, json)

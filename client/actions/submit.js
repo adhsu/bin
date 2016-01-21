@@ -1,4 +1,6 @@
 import * as types from './actionTypes';
+import {API_BASE_URL} from './../config'
+
 
 function requestNewPost(post) {
   return {
@@ -29,7 +31,7 @@ export function submitNewPost(post) {
     },
     body: JSON.stringify(post)
   }
-  const apiUrl = "http://10.0.1.187:3000/api/posts/create"
+  const apiUrl = API_BASE_URL + "/posts/create"
 
   return dispatch => {
     dispatch(requestNewPost(post))

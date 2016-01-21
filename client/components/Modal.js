@@ -5,6 +5,7 @@ import Media from './Media'
 import {submitNewPost} from '../actions/submit'
 import Loading from './Loading'
 import {modalSelector} from '../selectors/modalSelector'
+import {API_BASE_URL} from './../config'
 
 
 class Modal extends Component {
@@ -22,7 +23,7 @@ class Modal extends Component {
   }
 
   fetchTitle(url) {
-    fetch(`http://10.0.1.187:3000/api/title/?url=${url}`)
+    fetch(`${API_BASE_URL}/title/?url=${url}`)
       .then(response => {
         if (response.ok) {
           return response.json()

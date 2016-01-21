@@ -114,6 +114,7 @@ module.exports.toggleReaction = function *toggleReaction(next) {
     // find the post in question
     // check if a user has access to the post's bin
     // then modify the post to either add or remove emoji and uservoted 
+    console.log(postId, userId, emojiId)
     var fetchPost = r.table('posts')
       .get(postId)
       .run(this._rdbConn)

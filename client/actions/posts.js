@@ -1,5 +1,6 @@
 import 'whatwg-fetch'
 import * as types from './actionTypes';
+import {API_BASE_URL} from './../config'
 
 function requestPosts(slug) {
   return {
@@ -35,7 +36,7 @@ export function fetchPosts({slug, userId, page, postsPerPage}) {
 
     return setTimeout( ()=> {
       
-      return fetch(`http://10.0.1.187:3000/api/posts/get?binSlug=${slug}&userId=${userId}&pageNum=${page}&postsPerPage=${postsPerPage}`)
+      return fetch(`${API_BASE_URL}/posts/get?binSlug=${slug}&userId=${userId}&pageNum=${page}&postsPerPage=${postsPerPage}`)
         .then(checkStatus)
         .then(response => {
           return response.json()
@@ -95,7 +96,7 @@ export function deletePost(binSlug, id, index) {
     },
     body: JSON.stringify({id})
   }
-  const apiUrl = "http://10.0.1.187:3000/api/posts/delete"
+  const apiUrl = API_BASE_URL + "/posts/delete"
 
   return dispatch => {
     dispatch(requestDeletePost(binSlug, id, index))

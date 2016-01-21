@@ -41,7 +41,6 @@ class Bin extends React.Component {
         const scrollHeight = (document.documentElement && document.documentElement.scrollHeight) || document.body.scrollHeight
         const scrolledToBottom = (scrollTop + window.innerHeight) >= scrollHeight
         
-        console.log(this.state.hasMore)
         if (scrolledToBottom && !this.props.view.isLoading && this.state.hasMore) { 
           console.log('**inf scroll**')
           dispatch(
@@ -113,7 +112,6 @@ class Bin extends React.Component {
     const {dispatch, view, params, posts, routing} = this.props
     return (
       <div>
-        <div>http://i.imgur.com/Q9NkfmE.gif</div>
         
         { this.state.error!=="" ? <Error onClickFn={()=>this.setState({error: ""})} message={this.state.error}/> : null}
         
