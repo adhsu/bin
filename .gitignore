@@ -3,3 +3,6 @@ client/.DS_Store
 server/node_modules
 server/rethinkdb_data
 server/.DS_Store
+node_modules
+koa/node_modules
+koa/rethinkdb_data
