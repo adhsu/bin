@@ -1,0 +1,81 @@
+.reactions
+  text-align left
+  
+.reaction
+  cursor pointer
+  user-select none
+
+  display inline-block
+  border-radius 8px
+  height 42px
+  line-height 42px
+  padding 0 10px
+  margin-right 12px
+  line-height 42px
+  background-color rgba(#fff, 3%)
+  font-size 26px
+  border 1px solid rgba(#fff, 3%)
+  
+  &:hover
+    border 1px solid #5394E9
+  
+  &.reacted
+    border 1px solid #5394E9
+    .reaction-num
+      color #5394E9
+    
+.reaction-emoji
+  color white
+  margin-right 4px
+  
+.reaction-num
+  color rgba(#fff, 33%)
+
+// emoji picker
+.emoji-picker-wrapper
+  position relative
+  display inline-block
+  vertical-align top
+  height 42px
+  
+.emoji-picker-button
+  cursor pointer
+  line-height 42px
+  opacity 0.25
+  
+  img
+    display inline-block
+    vertical-align middle
+    width 41px
+    height 27px
+  
+  &.active
+  &:hover
+    opacity 0.75
+
+.emoji-list-wrapper
+  position absolute
+  left 0
+  top 100%
+  z-index 1
+  
+  background-color white
+  padding 5px
+  border-radius 3px
+  
+  width 190px
+  height 190px
+  overflow-y scroll
+  
+.emoji-list-item
+  cursor pointer
+  display inline-block
+  
+  font-size 26px
+  padding 5px
+  border-radius 3px
+  line-height 26px
+  &:hover
+    background-color #edf2f5
+  
+  

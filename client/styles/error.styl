@@ -1,0 +1,51 @@
+.error-wrapper
+  position fixed
+  top 10px
+  left 50%
+  transform translate3d(-50%, 0, 0)
+  
+  
+.error-content
+  background-color rgba(#DE5A5A, 70%)
+  border-radius 3px
+  max-width 500px
+  text-align center
+  padding 0px 20px
+  height 40px
+  
+
+  line-height 40px
+  font-size 14px
+  cursor pointer
+
+  animation bounceInDown 0.75s
+  
+@keyframes slideDown
+  0%
+    transform translate3d(-50%, -100px, 0)
+  100%
+    transform translate3d(-50%,0,0)
+
+@keyframes bounceInDown {
+  from, 80%, to {
+    -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  }
+
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -3000px, 0);
+    transform: translate3d(0, -3000px, 0);
+  }
+
+  80% {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 15px, 0);
+    transform: translate3d(0, 15px, 0);
+  }
+
+  to {
+    -webkit-transform: none;
+    transform: none;
+  }
+}

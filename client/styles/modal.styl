@@ -1,0 +1,79 @@
+.modal-backdrop
+  position fixed
+  top 0
+  bottom 0
+  left 0
+  right 0
+  background-color rgba(black, 95%)
+  display flex
+  justify-content center
+  align-items center
+  animation fadeIn 0.2s ease-out
+  
+.modal-content
+  
+  text-align center
+  width 90%
+  max-width 700px
+
+.modal-top
+  border-bottom 2px solid rgba(white, 50%)
+  display flex
+  padding-bottom 20px
+
+.modal-top-left
+  text-align left
+  flex 1
+  
+.modal-top-right
+  text-align right
+  flex 1
+
+.modal-close
+  color rgba(white, 50%)
+  cursor pointer
+  &:hover
+    color rgba(white, 75%)
+  
+.modal-url
+  color rgba(white, 50%)
+
+.modal-title-input-wrapper
+  position relative
+  margin-bottom 18px
+  margin-top 60px
+  
+
+.modal-title-input-loading
+  position absolute
+  top 15px
+  right 12px
+   
+.modal-title-input
+  background-color rgba(white, 13%)
+  border-radius 2px
+  border 0
+  height 64px
+  width 100%
+  line-height 100%
+  font-size 32px
+  text-align center
+  
+  &:focus
+    outline 0
+
+.modal-submit
+  color rgba(white, 50%)
+  margin-top 50px
+  font-size 24px
+  cursor pointer
+  &:hover
+    color rgba(white, 75%)  
+
+
+@keyframes fadeIn
+  from
+    opacity 0
+  to
+    opacity 1
+

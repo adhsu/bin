@@ -1,0 +1,21 @@
+.loader-spinning
+  width 50px
+  height 50px
+  opacity 0.5
+  
+  img
+    display block
+    width 100%
+    animation spin 1s infinite linear
+    filter brightness(0) invert(1)
+    -webkit-filter brightness(0) invert(1)
+    
+  &.centered
+    margin 50px auto
+
+@keyframes spin
+  0%
+    transform rotate(0deg)
+  100%
+    transform rotate(359deg)
+    

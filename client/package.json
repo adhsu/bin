@@ -1,0 +1,32 @@
+{
+  "name": "bin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "webpack-dev-server"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "css-loader": "^0.23.1",
+    "file-loader": "^0.8.5",
+    "history": "^1.17.0",
+    "ionicons": "^3.0.0-alpha.3",
+    "moment": "^2.11.0",
+    "nib": "^1.1.0",
+    "react": "^0.14.6",
+    "react-addons-update": "^0.14.6",
+    "react-dom": "^0.14.6",
+    "react-redux": "^4.0.6",
+    "react-router": "^1.0.3",
+    "redux": "^3.0.5",
+    "redux-simple-router": "^2.0.3",
+    "redux-thunk": "^1.0.3",
+    "reselect": "^2.0.2",
+    "style-loader": "^0.13.0",
+    "stylus-loader": "^1.4.3",
+    "url-loader": "^0.5.7",
+    "whatwg-fetch": "^0.11.0"
+  }
+}
