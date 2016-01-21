@@ -180,9 +180,7 @@ r.connect(config.rethinkdb, function(err, conn) {
         console.log("posts table ready, checking bin table...")
     }).error(function(err) {
         // The database/table/index was not available, create them
-        r.dbCreate(config.rethinkdb.db).run(conn).finally(function() {
-            return r.tableCreate('posts').run(conn)
-        }).finally(function() {
+        r.tableCreate('posts').run(conn).finally(function() {
             r.table('posts').indexCreate('binSlug_createdAt', [r.row('binSlug'), r.row('createdAt')]).run(conn)
         }).finally(function(result) {
             r.table('posts').indexWait('binSlug_createdAt').run(conn)
@@ -205,9 +203,7 @@ r.connect(config.rethinkdb, function(err, conn) {
         startKoa()
     }).error(function(err) {
         // The database/table/index was not available, create them
-        r.dbCreate(config.rethinkdb.db).run(conn).finally(function() {
-            return r.tableCreate('bins').run(conn)
-        }).finally(function() {
+        r.tableCreate('bins').run(conn).finally(function() {
             r.table('bins').indexCreate('createdAt').run(conn)
         }).finally(function(result) {
             r.table('bins').indexWait('createdAt').run(conn)
