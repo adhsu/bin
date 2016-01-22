@@ -5,16 +5,15 @@ const LoggedIn = (props) => {
   const {dispatch, currentUser, bins} = props
   return (
     <div className="logged-in">
-      <span>Logged in as User {currentUser.id}. </span>
-      <span>My bins: </span>
-      {currentUser.myBins.map(slug => {
-        const binDetails = bins[slug]
+      <span>Logged in as {currentUser.username}. </span>
+      <span>Bins: </span>
+      {Object.keys(currentUser.bins).map(slug => {
         return (
-          <span key={binDetails.slug}>
+          <span key={slug}>
             <a href="javascript:;"
               className="nav-bin-link" 
-              onClick={()=>dispatch(routeActions.push('/'+binDetails.slug))}>
-              {binDetails.slug}
+              onClick={()=>dispatch(routeActions.push('/'+slug))}>
+              {slug}
             </a>{' '}
           </span>
         )

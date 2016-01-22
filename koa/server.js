@@ -14,7 +14,7 @@ var r = require('rethinkdb')
 
 var posts = require('./controllers/posts')
 var bins = require('./controllers/bins')
-
+var dummyData = require('./dummyData')
 var config = require(__dirname+"/config.js")
 
 
@@ -154,6 +154,16 @@ r.connect(config.rethinkdb, function(err, conn) {
 
     r.table('users').indexWait('createdAt').run(conn).then(function(err, result) {
         console.log("User table ready, checking post table...")
+
+        // insert dummy data if 0 rows
+        r.table('users').count().run(conn).then(function(result) {
+            console.log('num users existing: ', result)
+            if (result==0) {
+                console.log('0 users, adding dummy data...')
+                r.table('users').insert(dummyData.users).run(conn)
+            }
+        })
+
     }).error(function(err) {
         // The database/table/index was not available, create them
         r.dbCreate(config.rethinkdb.db).run(conn).finally(function() {
@@ -178,6 +188,16 @@ r.connect(config.rethinkdb, function(err, conn) {
 
     r.table('posts').indexWait('binSlug_createdAt').run(conn).then(function(err, result) {
         console.log("posts table ready, checking bin table...")
+
+        // insert dummy data if 0 rows
+        r.table('posts').count().run(conn).then(function(result) {
+            console.log('num posts existing: ', result)
+            if (result==0) {
+                console.log('0 posts, adding dummy data...')
+                r.table('posts').insert(dummyData.posts).run(conn)
+            }
+        })
+
     }).error(function(err) {
         // The database/table/index was not available, create them
         r.tableCreate('posts').run(conn).finally(function() {
@@ -200,6 +220,16 @@ r.connect(config.rethinkdb, function(err, conn) {
 
     r.table('bins').indexWait('createdAt').run(conn).then(function(err, result) {
         console.log("bins table ready")
+
+        // insert dummy data if 0 rows
+        r.table('bins').count().run(conn).then(function(result) {
+            console.log('num bins existing: ', result)
+            if (result==0) {
+                console.log('0 bins, adding dummy data...')
+                r.table('bins').insert(dummyData.bins).run(conn)
+            }
+        })
+
         startKoa()
     }).error(function(err) {
         // The database/table/index was not available, create them
@@ -235,11 +265,11 @@ var API = new router()
 API.get('/title/', getURL)
 API.get('/posts/get', posts.all)
 API.put('/posts/create', posts.create)
-// API.del('/posts/delete', posts.delete)
-API.get('/posts/toggleReaction', posts.toggleReaction)
+API.del('/posts/delete', posts.delete)
+API.post('/posts/toggleReaction', posts.toggleReaction)
 // API.post('/todo/delete', del)
 
-API.get('/bins/all', bins.getBins)
+API.get('/bins/get', bins.getBins)
 API.put('/bins/create', bins.create)
 
 app.use(createConnection)

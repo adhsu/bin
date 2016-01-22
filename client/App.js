@@ -2,13 +2,15 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {routeActions} from 'redux-simple-router'
 import Nav from './components/Nav'
-import {initEnvironment} from './actions/environment';
+import {initEnvironment} from './actions/environment'
+import {fetchBins} from './actions/bins'
 
 class App extends React.Component {
 
-  componentDidMount () {
-    const {dispatch} = this.props;
+  componentWillMount () {
+    const {dispatch, currentUser} = this.props;
     dispatch(initEnvironment())
+    dispatch(fetchBins(currentUser.id))
   }
 
   render() {

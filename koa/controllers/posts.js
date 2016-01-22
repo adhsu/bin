@@ -6,6 +6,14 @@ var binId =  'ed69b97c-cd29-4f70-9c0a-34d01dddf7ce'
 // var userId = '0f74b6ad-baa2-4f03-9c5d-4c5ea6c92216'
 // var lastViewed = 1452934637635
 
+var anonymizeReactionsInPost = function(post, userId) {
+  for (var reactionKey in post.reactions) {
+    var reactionArr = post.reactions[reactionKey]
+    post.reactions[reactionKey] = {'num' : post.reactions[reactionKey].length}
+    post.reactions[reactionKey]['userVoted'] = (reactionArr.indexOf(userId) != -1) ? true : false
+  }
+  return post
+}
 
 // Return all posts for a specific bin
 // TODO: update lastViewed
@@ -22,6 +30,7 @@ module.exports.all = function *all(next) {
     var fetch = r.table('posts')
       .between([binSlug, r.minval], [binSlug, r.maxval], {index: 'binSlug_createdAt'})
       .orderBy({index: r.desc('binSlug_createdAt')})
+      .without('author')
       .filter(function (post) {
         return post("createdAt").lt(lastViewed);
       })
@@ -30,7 +39,7 @@ module.exports.all = function *all(next) {
       .run(this._rdbConn)
 
     var updatedBinObj = {"bins": {}}
-      updatedBinObj["bins"][binId] = Date.now()
+      updatedBinObj["bins"][binSlug] = Date.now()
 
     var markLastViewed = r.table('users')
       .get(userId)
@@ -41,14 +50,19 @@ module.exports.all = function *all(next) {
       // Fetch Post 
       var cursor = yield fetch
       var result = yield cursor.toArray()
-      result = result.map(function(post) {
-        for (var reactionKey in post.reactions) {
-          var reactionArr = post.reactions[reactionKey]
-          post.reactions[reactionKey] = {'num' : post.reactions[reactionKey].length}
-          post.reactions[reactionKey]['userVoted'] = (reactionArr.indexOf(userId) != -1) ? true : false
+      // result = result.map(function(post) {
+      //   for (var reactionKey in post.reactions) {
+      //     var reactionArr = post.reactions[reactionKey]
+      //     post.reactions[reactionKey] = {'num' : post.reactions[reactionKey].length}
+      //     post.reactions[reactionKey]['userVoted'] = (reactionArr.indexOf(userId) != -1) ? true : false
+      //   }
+      //   return post
+      // })
+      result = result.map(
+        function(post) {
+          return anonymizeReactionsInPost(post, userId)
         }
-        return post
-      })
+      )
       console.log(result)
       this.type = 'application/json'
       this.body = JSON.stringify(result)
@@ -104,9 +118,16 @@ module.exports.delete = function *del(next) {
 
 // Toggle a reaction
 module.exports.toggleReaction = function *toggleReaction(next) {
-  var postId = this.query.postId
-  var userId = this.query.userId
-  var emojiId = this.query.emojiId
+  var reactionInfo = yield parse(this)
+  console.log('reaction info ', reactionInfo)
+
+  // var postId = this.query.postId
+  // var userId = this.query.userId
+  // var emojiId = this.query.emojiId
+
+  var postId = reactionInfo.postId
+  var userId = reactionInfo.userId
+  var emojiId = reactionInfo.emojiId
 
   if (!postId || !userId || !emojiId) {
     this.body = 'Please make sure to pass a post, user, and emoji ID'
@@ -114,18 +135,20 @@ module.exports.toggleReaction = function *toggleReaction(next) {
     // find the post in question
     // check if a user has access to the post's bin
     // then modify the post to either add or remove emoji and uservoted 
-    console.log(postId, userId, emojiId)
+    console.log('stuff is ', postId, userId, emojiId)
     var fetchPost = r.table('posts')
       .get(postId)
       .run(this._rdbConn)
 
       // still need to make sure userId is authenticated
     var isUserInBin = function(binId){
-      return r.table('users').get(userId)("bins").contains(binId).run(this._rdbConn)
+      return r.table('bins').get(binId)("users").contains(userId).run(this._rdbConn)
+      // return r.table('users').get(userId)("bins").contains(binId).run(this._rdbConn)
     }.bind(this)
 
     try{
       var post = yield fetchPost
+      console.log('post is ', post)
       // var userHasBin = yield isUserInBin(post.binId)
       if (yield isUserInBin(post.binId)) {
 
@@ -150,7 +173,8 @@ module.exports.toggleReaction = function *toggleReaction(next) {
         var result = yield r.table('posts').get(postId).update({"reactions" : r.literal(post.reactions)}, {returnChanges: true}).run(this._rdbConn)
         
         if (result.changes.length > 0) {
-          post = result.changes[0].new_val 
+          post = result.changes[0].new_val
+          post = anonymizeReactionsInPost(post, userId)
           this.body = JSON.stringify(post)
         } else {
           this.body = 'no change?' 

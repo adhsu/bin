@@ -30,7 +30,7 @@ function checkStatus(response) {
 }
 
 // thunk
-export function fetchPosts({slug, userId, page, postsPerPage}) {
+function fetchPosts({slug, userId, page, postsPerPage}) {
   return dispatch => {
     dispatch(requestPosts(slug))
 
@@ -61,9 +61,10 @@ function shouldFetchPosts(state, slug) {
   }
 }
 
-export function fetchPostsIfNeeded({slug, userId, page, postsPerPage}) {
+export function fetchPostsIfNeeded({slug, userId, page, postsPerPage}, force=false) {
   return (dispatch, getState) => {
-    if (shouldFetchPosts(getState(), slug)) {
+    console.log('hehehe ', getState())
+    if (shouldFetchPosts(getState(), slug) || force) {
       return dispatch(fetchPosts({slug, userId, page, postsPerPage}))
     }
   }
@@ -108,6 +109,52 @@ export function deletePost(binSlug, id, index) {
         .then(json => {
           console.log('delete post ', binSlug, id, index, json)
           return dispatch(receiveDeletePost(binSlug, id, index, json))
+        })
+    }, 500)
+  }
+}
+
+
+
+function requestToggleReaction(userId, postId, emojiId, binSlug) {
+  return {
+    type: types.REQUEST_TOGGLE_REACTION,
+    userId, postId, emojiId, binSlug
+  }
+}
+
+function receiveToggleReaction(userId, postId, emojiId, binSlug, json) {
+  return {
+    type: types.RECEIVE_TOGGLE_REACTION,
+    userId, postId, emojiId, binSlug,
+    data: json,
+    receivedAt: Date.now()
+  }
+}
+
+// thunk
+export function toggleReaction(userId, postId, emojiId, binSlug) {
+  
+  const init = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({userId, postId, emojiId})
+  }
+  const apiUrl = API_BASE_URL + "/posts/toggleReaction"
+
+  return dispatch => {
+    dispatch(requestToggleReaction(userId, postId, emojiId, binSlug))
+    
+    return setTimeout( ()=> {
+      
+      return fetch(apiUrl, init)
+        .then(response => response.json())
+        .then(json => {
+          console.log('toggle reaction ', userId, postId, emojiId, binSlug, json)
+          return dispatch(receiveToggleReaction(userId, postId, emojiId, binSlug, json))
         })
     }, 500)
   }

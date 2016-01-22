@@ -20,7 +20,6 @@ class Posts extends Component {
                 index={index}
                 dispatch={dispatch}
                 currentUser={currentUser}
-                bins={bins}
                 post={post} />
             )
           })

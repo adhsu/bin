@@ -3,7 +3,7 @@ import Media from './Media'
 import Reactions from './Reactions'
 import Time from './Time'
 import Source from './Source'
-import {toggleReaction} from '../actions/actions'
+import {toggleReaction} from '../actions/posts'
 import {deletePost} from '../actions/posts'
 const closeImg = require('../static/images/close.svg')
 
@@ -18,13 +18,15 @@ class Post extends Component {
 
   delete(e) {
     console.log('boop')
-    const {index, dispatch, binSlug, id} = this.props
+    const {index, dispatch, post} = this.props
+    const {binSlug, id} = post
     dispatch(deletePost(binSlug, id, index))
   }
 
   toggleReaction(emojiId) {
-    const {dispatch, currentUser, id} = this.props
-    dispatch(toggleReaction(currentUser.id, id, emojiId))
+    const {dispatch, currentUser, post} = this.props
+    const {id, binSlug} = post
+    dispatch(toggleReaction(currentUser.id, id, emojiId, binSlug))
   }
 
   processUrl(url) {
@@ -36,19 +38,15 @@ class Post extends Component {
   }
 
   render() {
-    const {index, dispatch, currentUser, bins, post} = this.props
-
-    const {author, binId, binSlug, createdAt, id, mediaType, reactions, title, url} = post
-    
-    const isAuthor = currentUser.id == author
+    const {index, dispatch, currentUser, post} = this.props
+    const {binId, binSlug, createdAt, id, mediaType, reactions, title, url} = post
 
     return (
       <div className={
         'post post-style1 '
-        + (bins[binSlug].lastViewed<createdAt ? 'post-new ': null)
-        + (isAuthor ? 'post-author ' : null)} >
+        + (currentUser.bins[binSlug]<createdAt ? 'post-new ': null)
+      }>
         
-
         <div className="post-close" onClick={e=>this.delete(e)}>
           <img src={closeImg} />
         </div>

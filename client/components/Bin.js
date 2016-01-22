@@ -10,7 +10,7 @@ import Loading from './Loading'
 import {handlePaste} from '../helpers/pasteHelpers'
 import {_throttle} from '../helpers/utils'
 import {binSelector} from '../selectors/binSelector'
-import {fetchPostsIfNeeded, fetchPosts} from '../actions/posts'
+import {fetchPostsIfNeeded} from '../actions/posts'
 
 
 class Bin extends React.Component {
@@ -44,12 +44,12 @@ class Bin extends React.Component {
         if (scrolledToBottom && !this.props.view.isLoading && this.state.hasMore) { 
           console.log('**inf scroll**')
           dispatch(
-            fetchPosts({
+            fetchPostsIfNeeded({
               slug: params.slug, 
               userId: currentUser.id, 
               page: this.state.page+1,
               postsPerPage: 5
-            })
+            }, true)
           )
           this.setState({page: this.state.page+1})
           
@@ -70,6 +70,7 @@ class Bin extends React.Component {
         postsPerPage: 5
       })
     )
+
   }
 
   componentWillUnmount() {
@@ -83,7 +84,9 @@ class Bin extends React.Component {
     console.log('bin receives new props ', this.props, nextProps)
 
     const numNewPosts = nextProps.posts.length - this.props.posts.length
+    console.log('numNewPosts ', numNewPosts)
     if (numNewPosts<5 && numNewPosts>0) {
+      console.log('hasMore false')
       this.setState({hasMore: false})
     }
 

@@ -23,8 +23,7 @@ class Nav extends Component {
         <div className="nav-left">
           <div className="nav-logo-wrapper" onClick={e=>this.handleClick(e)}>
             <span className="nav-logo">
-              <Link to="/">bin</Link>
-              {'/'}
+              bin/
               {slug ? <Link to={'/'+slug}>{slug}</Link> : null}
             </span>
             { (this.state.menuIsOpen && bins[currentUser.currentBin]) ? <NavLogoMenu {...this.props}/> : null }
@@ -33,7 +32,7 @@ class Nav extends Component {
         
         
         <div className="nav-right">
-          { currentUser ? <LoggedIn {...this.props} /> : null}
+          { currentUser ? <LoggedIn {...this.props} /> : null }
           
 
         </div>

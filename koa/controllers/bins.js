@@ -1,15 +1,16 @@
 "use strict"
 var r = require('rethinkdb')
 var parse = require('co-body')
-
-var userId = "0f74b6ad-baa2-4f03-9c5d-4c5ea6c92216"
-
+var constUserId = "0f74b6ad-baa2-4f03-9c5d-4c5ea6c92216"
 
 // Get all Bins with user object filled out
 module.exports.getBins = function *getBins() {
-
+  var userId = this.query.userId || constUserId
   try {
-    var cursor = yield r.table('bins').getAll(r.args(r.table('users').get(userId)("bins").keys())).merge(function (bin) {
+    var cursor = yield r.table('bins').getAll(
+        r.args(r.table('users').get(userId)("bins").keys()),
+        {index: 'slug'}
+      ).merge(function (bin) {
       return { users: bin('users').map(function(userId) {
         return r.table('users').get(userId).pluck(['username'])
       }) }
@@ -21,6 +22,7 @@ module.exports.getBins = function *getBins() {
       // })
     }).run(this._rdbConn)
     var bins = yield cursor.toArray()
+    console.log('got bins ', bins)
     this.type = 'application/json'
     this.body = JSON.stringify(bins)
   }
@@ -33,6 +35,7 @@ module.exports.getBins = function *getBins() {
 
 // Create a new bin  
 module.exports.create = function *create(next) {
+  var userId = this.query.userId || constUserId
   try{
     var bin = yield parse(this)
     // make userId dynamic
@@ -43,7 +46,6 @@ module.exports.create = function *create(next) {
     } 
     bin.title = bin.title || bin.slug
     bin.users = [userId]
-    bin.posts = []
     bin.createdAt = r.now().toEpochTime().mul(1000) // Set the field `createdAt` to the current time
 
 

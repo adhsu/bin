@@ -1,3 +1,23 @@
+export function createLookupObj (array, key='id') {
+  const lookup = {};
+  console.log('key is ', key)
+  for (var i = 0, len = array.length; i < len; i++) {
+      lookup[array[i][key]] = array[i];
+  }
+  return lookup
+}
+
+export function findById (sourceArray, id) {
+  for (var i = 0; i < sourceArray.length; i++) {
+    if (sourceArray[i].id === id) {
+      return sourceArray[i];
+    }
+  }
+  throw "Couldn't find object with id: " + id;
+}
+
+// ripped from underscore.js
+
 const _now = Date.now || function() {
   return new Date().getTime();
 };
