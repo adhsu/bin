@@ -32,7 +32,7 @@ class Nav extends Component {
         
         
         <div className="nav-right">
-          { currentUser ? <LoggedIn {...this.props} /> : null }
+          {/* currentUser ? <LoggedIn {...this.props} /> : null */}
           
 
         </div>

@@ -3,7 +3,7 @@ import React from 'react'
 const Home = (props) => {
   return (
     <div>
-      <h4>Home is here</h4>
+      <h4>Welcome. Bin lets you share media with your close friends.</h4>
     </div>
   )
 }

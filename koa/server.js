@@ -2,13 +2,12 @@ var koa = require('koa')
 var router = require('koa-router')
 var mount = require('koa-mount')
 var cors = require('koa-cors');
-
+var fs = require('fs')
 
 // Middleware and helpers 
 var serve = require('koa-static')
 var parse = require('co-body')
 var http = require('http')
-
 
 var r = require('rethinkdb')
 
@@ -16,8 +15,6 @@ var posts = require('./controllers/posts')
 var bins = require('./controllers/bins')
 var dummyData = require('./dummyData')
 var config = require(__dirname+"/config.js")
-
-
 
 var app = koa()
 require('koa-qs')(app)
@@ -234,9 +231,9 @@ r.connect(config.rethinkdb, function(err, conn) {
     }).error(function(err) {
         // The database/table/index was not available, create them
         r.tableCreate('bins').run(conn).finally(function() {
-            r.table('bins').indexCreate('createdAt').run(conn)
+            r.table('bins').indexCreate('slug').run(conn)
         }).finally(function(result) {
-            r.table('bins').indexWait('createdAt').run(conn)
+            r.table('bins').indexWait('slug').run(conn)
         }).then(function(result) {
             console.log("bin table ready...")
             startKoa()

@@ -4,6 +4,7 @@ const initialState = {
   currentUser: {
     id: "0f74b6ad-baa2-4f03-9c5d-4c5ea6c92216",
     username: 'adhsu',
+    lastViewedBin: 'fell',
     bins: {
       "fell": 1453430821034
     }
