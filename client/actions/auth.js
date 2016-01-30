@@ -20,11 +20,11 @@ export function initAuth() {
   }
 }
 
-export function loginUser() {
+export function loginUser(token) {
+  console.log('login with token',token)
   return dispatch => {
-    const fakeToken = 'butts'
-    Cookies.set(COOKIE_PATH, fakeToken)
-    dispatch(fetchAuthedUser(fakeToken))
+    Cookies.set(COOKIE_PATH, token)
+    dispatch(fetchAuthedUser(token))
   }
 }
 
@@ -40,41 +40,41 @@ export function logoutUser() {
 export function fetchAuthedUser(token) {
   console.log('fetching authed user with token ', token)
   return dispatch => {
-    if (token=='butts') {
-      const fakeUser = {
-        id: "0f74b6ad-baa2-4f03-9c5d-4c5ea6c92216",
-        username: '@adhsu',
-        lastViewedBin: 'fell',
-        bins: [
-          {
-            id: 'fell',
-            title: "Fell Street Dope-Ass Bin",
-            users: ['@adhsu', '@connorzwick', '@MITDelian'],
-            createdAt: 1454012406446
-          },
-          {
-            id: 'southpark',
-            title: "112 South Park Bin. No weird stuff.",
-            users: ['@adhsu'],
-            createdAt: 1454012406446
-          }
-        ],
-        binsOld: [
-          { id: 'fell', lastViewed: 1453430821034 },
-          { id: 'southpark', lastViewed: 1453430821034 }
-        ]
-      }
+    // if (token=='butts') {
+    //   const fakeUser = {
+    //     id: "0f74b6ad-baa2-4f03-9c5d-4c5ea6c92216",
+    //     username: '@adhsu',
+    //     lastViewedBin: 'fell',
+    //     bins: [
+    //       {
+    //         id: 'fell',
+    //         title: "Fell Street Dope-Ass Bin",
+    //         users: ['@adhsu', '@connorzwick', '@MITDelian'],
+    //         createdAt: 1454012406446
+    //       },
+    //       {
+    //         id: 'southpark',
+    //         title: "112 South Park Bin. No weird stuff.",
+    //         users: ['@adhsu'],
+    //         createdAt: 1454012406446
+    //       }
+    //     ],
+    //     binsOld: [
+    //       { id: 'fell', lastViewed: 1453430821034 },
+    //       { id: 'southpark', lastViewed: 1453430821034 }
+    //     ]
+    //   }
 
-      dispatch(receiveAuthedUserPre(token, fakeUser))
-    }
+    //   dispatch(receiveAuthedUserPre(token, fakeUser))
+    // }
 
-    // return fetch(`${API_BASE_URL}/me?token=${token}`)
-    //   .then(delay(API_DELAY))
-    //   .then(response => response.json())
-    //   .then(json => {
-    //     return dispatch(receiveAuthedUserPre(token, json))
-    //   })
-    //   .catch(err => { throw err; })
+    return fetch(`${API_BASE_URL}/me?token=${token}`)
+      .then(delay(API_DELAY))
+      .then(response => response.json())
+      .then(json => {
+        return dispatch(receiveAuthedUserPre(token, json))
+      })
+      .catch(err => { throw err; })
 
   }
 }

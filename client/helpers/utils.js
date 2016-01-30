@@ -1,3 +1,16 @@
+export function parseQueryString(queryString) {
+  const qsObj = {}
+  if (queryString[0]=='?') {
+    queryString = queryString.substring(1)
+  }
+  const splitArr = queryString.split("&")
+  splitArr.map(piece => {
+    const [key, val] = piece.split('=')
+    qsObj[key] = val
+  })
+  return qsObj
+}
+
 export function encodeQueryData(data) {
     return Object.keys(data).map(key => {
         return [key, data[key]].map(encodeURIComponent).join("=")

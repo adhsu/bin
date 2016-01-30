@@ -6,6 +6,7 @@ import Popover from '../components/Popover'
 import {loginUser, logoutUser} from '../actions/auth'
 import NavLogoMenu from '../components/NavLogoMenu'
 import {_throttle, findById} from '../helpers/utils'
+import {popupTwitterLogin} from '../helpers/login'
 
 class Nav extends Component {
   constructor(props) {
@@ -23,8 +24,8 @@ class Nav extends Component {
 
   login(e) {
     e.preventDefault();
-    const {dispatch} = this.props;
-    dispatch(loginUser());
+    const {dispatch} = this.props;    
+    popupTwitterLogin(dispatch)
   }
 
   logout(e) {
@@ -72,7 +73,7 @@ class Nav extends Component {
 
     return (
       <div className="nav-right-inner">
-        <a href='#' onClick={this.login}>Login with Twitter</a>
+        <a href='#' onClick={this.login}>Sign in with Twitter</a>
       </div>
     )
     

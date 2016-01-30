@@ -54,7 +54,6 @@ passport.use(new TwitterStrategy({
     callbackURL: callbackURL + '/twitter'
   },
   function(token, tokenSecret, profile, done) {
-
   	let objectMapper = function (profile) {
 	    return {
 	      'id': profile.username,
@@ -145,9 +144,11 @@ app.get('/',
 app.get('/auth/login/twitter', passport.authenticate('twitter', {session: false}));
 
 app.get('/auth/login/callback/twitter', 
-  passport.authenticate('twitter', {failureRedirect: '/login'}),
+  passport.authenticate('twitter', {failureRedirect: '/'}),
   	function(req, res) {
-  		res.send("/user?access_token=" + req.user.token)
+      // res.sendFile(__dirname + '/html/callback.html')
+      res.redirect('http://127.0.0.1:3333/login?foo=bar&access_token='+req.user.token)
+  		// res.send("/user?access_token=" + req.user.token)
   	}
   );
 
