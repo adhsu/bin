@@ -11,6 +11,7 @@ import {ensureLoggedIn} from 'connect-ensure-login'
 const authRequired = ensureLoggedIn('/noAuth')
 import {r, type, Errors} from'./utils/thinky.js'
 
+import * as binCtrl from './api/bins'
 // import auth from './auth'
 // import authRouter from './auth/auth-router'
 
@@ -33,6 +34,7 @@ const callbackURL = 'http://' + config.url + ':' + config.ports.http + '/auth/lo
 import Bin from './models/bins'
 import Post from './models/posts'
 import User from './models/users'
+
 
 
 passport.use(new JwtStrategy(jwtOpts, function(jwt_payload, done) {
@@ -163,6 +165,16 @@ app.get('/user',
 	function(req, res) {
 	  res.send(req.user)
 	})
+
+app.get('/bins/:binId/join', 
+	isAuthorized,
+	isCurrentUser,
+	binCtrl.joinBin)
+
+app.get('/createBin', 
+	isAuthorized,
+	isCurrentUser,
+	binCtrl.createBin)
 // app.get('/user', 
 // 	passport.authenticate('jwt', { session: false},
 // 	function(req, res) {
