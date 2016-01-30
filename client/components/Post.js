@@ -3,7 +3,8 @@ import Media from './Media'
 import Reactions from './Reactions'
 import Time from './Time'
 import Source from './Source'
-import {toggleReaction} from '../actions/posts'
+
+import {toggleReaction} from '../actions/reactions'
 import {deletePost} from '../actions/posts'
 const closeImg = require('../static/images/close.svg')
 
@@ -11,22 +12,21 @@ const closeImg = require('../static/images/close.svg')
 class Post extends Component {
 
   constructor() {
-    super();
-    this.toggleReaction = this.toggleReaction.bind(this);
+    super()
+    this.toggleReaction = this.toggleReaction.bind(this)
     this.delete = this.delete.bind(this)
   }
 
   delete(e) {
-    console.log('boop')
-    const {index, dispatch, post} = this.props
-    const {binSlug, id} = post
-    dispatch(deletePost(binSlug, id, index))
+    const {dispatch, post} = this.props
+    const {binId, id} = post
+    dispatch(deletePost(binId, id))
   }
 
   toggleReaction(emojiId) {
-    const {dispatch, currentUser, post} = this.props
-    const {id, binSlug} = post
-    dispatch(toggleReaction(currentUser.id, id, emojiId, binSlug))
+    const {dispatch, post} = this.props
+    const {binId, id} = post
+    // dispatch(toggleReaction(currentUser.id, id, emojiId, binSlug))
   }
 
   processUrl(url) {
@@ -38,14 +38,11 @@ class Post extends Component {
   }
 
   render() {
-    const {index, dispatch, currentUser, post} = this.props
-    const {binId, binSlug, createdAt, id, mediaType, reactions, title, url} = post
+    const {dispatch, auth, post} = this.props
+    const {id, binId, title, url, mediaType, createdAt, reactions} = post
 
     return (
-      <div className={
-        'post post-style1 '
-        + (currentUser.bins[binSlug]<createdAt ? 'post-new ': null)
-      }>
+      <div className='post post-style1'>
         
         <div className="post-close" onClick={e=>this.delete(e)}>
           <img src={closeImg} />
@@ -64,7 +61,7 @@ class Post extends Component {
             {' '}&#183;{' '}
             <Time timestamp={createdAt}/>
             {' '}&#183;{' '}
-            <span>bin/{binSlug}</span>
+            <span>bin/{binId}</span>
             
 
           </div>

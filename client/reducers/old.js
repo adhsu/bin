@@ -1,13 +1,12 @@
 import update from 'react-addons-update'
 import { UPDATE_LOCATION } from 'redux-simple-router'
-import * as types from './actions/actionTypes';
+import * as types from './constants/ActionTypes';
 import {createLookupObj} from './helpers/utils'
 
 function posts(state={}, action) {
   switch(action.type) {
 
     case types.RECEIVE_POSTS:
-      
       if (!state[action.params.slug]) {
         // if no posts from bin
         // console.log('no posts in bin, posts are ', action.posts, state)
@@ -23,20 +22,17 @@ function posts(state={}, action) {
       }
 
     case types.RECEIVE_NEW_POST:
-      console.log('received new post ', action.post, action.data)
-
+      
       return update(state, {
         [action.data.binSlug]: {$unshift: [action.data]}
       })
 
     case types.REQUEST_DELETE_POST:
-      console.log('optimistically delete post ', action)
       return update(state, {
         [action.binSlug]: {$splice: [[action.index, 1]]}
       })
     
     case types.REQUEST_TOGGLE_REACTION:
-      console.log('blip ', action)
       return state
       // const reactions = state[action.postId]['reactions']
       // const reaction = reactions[action.emojiId]
@@ -79,7 +75,6 @@ function posts(state={}, action) {
       //   })
       // }
     case types.RECEIVE_TOGGLE_REACTION:
-      console.log('receive toggle reaction ', action)
       
       return update(state, {
         [action.binSlug]: {$apply: (posts) => {
@@ -116,10 +111,8 @@ function view(state={}, action) {
     case types.DISPLAY_ERROR:
       return Object.assign({}, state, {error: action.message})
     case types.REQUEST_POSTS:
-      console.log('isloading true')
       return Object.assign({}, state, {isLoading: true})
     case types.RECEIVE_POSTS:
-      console.log('isloading false')
       return Object.assign({}, state, {isLoading: false})
 
     case types.CHANGE_IS_MOBILE:
@@ -139,22 +132,16 @@ function view(state={}, action) {
 function bins(state={}, action) {
   switch(action.type) {
     case types.RECEIVE_BINS:
-      return createLookupObj(action.data, 'slug')
+      return Object.assign({}, action.bins)
     default:
       return state
   }
 }
 
-function users(state={}, action) {
-  return state
-}
-
-
 export default {
   posts,
   currentUser,
   view,
-  bins,
-  users
+  bins
 }
 

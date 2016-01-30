@@ -1,6 +1,7 @@
 import 'whatwg-fetch'
-import * as types from './actionTypes';
-import {API_BASE_URL} from './../config'
+import * as types from '../constants/ActionTypes';
+import {API_BASE_URL, API_DELAY} from '../constants/Config'
+import {delay} from '../helpers/utils'
 
 
 function requestTitle(url) {
@@ -23,15 +24,13 @@ function receiveTitle(url, json) {
 export function fetchTitle(url) {
   return dispatch => {
     dispatch(requestTitle(url))
-
-    return setTimeout( ()=> {
-      
-      return fetch(`${API_BASE_URL}/title/?url=${url}`)
-        .then(response => response.json())
-        .then(json => {
-          console.log('fetchTitle ', url, json)
-          return dispatch(receiveTitle(url, json))
-        })
-    }, 500)
+  
+    return fetch(`${API_BASE_URL}/title/?url=${url}`)
+      .then(delay(API_DELAY))
+      .then(response => response.json())
+      .then(json => {
+        console.log('fetchTitle ', url, json)
+        return dispatch(receiveTitle(url, json))
+      })
   }
 }

@@ -1,161 +1,151 @@
 import 'whatwg-fetch'
-import * as types from './actionTypes';
-import {API_BASE_URL} from './../config'
+import * as types from '../constants/ActionTypes'
+import {API_BASE_URL, API_DELAY} from '../constants/Config'
+import {checkStatus, delay, encodeQueryData} from '../helpers/utils'
 
-function requestPosts(slug) {
+function requestPosts() {
   return {
-    type: types.REQUEST_POSTS,
-    slug
+    type: types.REQUEST_POSTS
   }
 }
 
-function receivePosts({slug, userId, page, postsPerPage}, json) {
+function receivePosts(binId, posts) {
   return {
     type: types.RECEIVE_POSTS,
-    params: {slug, userId, page, postsPerPage},
-    // posts: json.data.children.map(child => child.data),
-    posts: json,
-    receivedAt: Date.now()
+    binId,
+    posts
   }
 }
 
-function checkStatus(response) {
-  if (response.status >= 200 && response.status < 300) {
-    return response
-  } else {
-    var error = new Error(response.statusText)
-    error.response = response
-    throw error
-  }
-}
-
-// thunk
-function fetchPosts({slug, userId, page, postsPerPage}) {
+export function fetchPosts(token, binId) {
+  console.log('actions/fetchPosts for bin ', binId)
   return dispatch => {
-    dispatch(requestPosts(slug))
+    dispatch(requestPosts())
 
-    return setTimeout( ()=> {
-      
-      return fetch(`${API_BASE_URL}/posts/get?binSlug=${slug}&userId=${userId}&pageNum=${page}&postsPerPage=${postsPerPage}`)
-        .then(checkStatus)
-        .then(response => {
-          return response.json()
-        })
-        .then(json => {
-          console.log('fetchPosts: ', {slug, userId, page, postsPerPage}, json)
-          return dispatch(receivePosts({slug, userId, page, postsPerPage}, json))
-        })
-        .catch(error => {
-          console.log('error: ', error.message)
-        })
-    }, 1500)
+    if (token=='butts') {
+      const fakePostsFell = [
+        {
+          id: '0',
+          author: '0f74b6ad-baa2-4f03-9c5d-4c5ea6c92216',
+          binId: 'fell',
+          title: "One of my favourite things about working in the ski fields",
+          url: "https://i.imgur.com/hWwlWgI.jpg",
+          createdAt: 1454012406446,
+          mediaType: "image",
+          reactions: {}
+        },
+        {
+          id: '1',
+          author: '0f74b6ad-baa2-4f03-9c5d-4c5ea6c92216',
+          binId: 'fell',
+          title: "Someone at this museum has a sense of humor",
+          url: "https://i.imgur.com/77beSl9.jpg",
+          createdAt: 1454012406446,
+          mediaType: "image",
+          reactions: {}
+        }
+      ]
+
+      const fakePostsSouthPark = [
+        // {
+        //   id: '2',
+        //   author: '0f74b6ad-baa2-4f03-9c5d-4c5ea6c92216',
+        //   binId: 'southpark',
+        //   title: "A funny aww photo 1",
+        //   url: "https://i.imgur.com/OVvEDw9.jpg",
+        //   createdAt: 1454012406446,
+        //   mediaType: "image",
+        //   reactions: {}
+        // },
+        // {
+        //   id: '3',
+        //   author: '0f74b6ad-baa2-4f03-9c5d-4c5ea6c92216',
+        //   binId: 'southpark',
+        //   title: "A funny aww photo 2",
+        //   url: "https://i.imgur.com/q8slPRA.jpg",
+        //   createdAt: 1454012406446,
+        //   mediaType: "image",
+        //   reactions: {}
+        // }
+      ]
+
+      if (binId=='fell') {
+        setTimeout(()=> {
+          dispatch(receivePosts(binId, fakePostsFell))
+        }, API_DELAY)
+      } else if (binId=='southpark') {
+        setTimeout(()=> {
+          dispatch(receivePosts(binId, fakePostsSouthPark))
+        }, API_DELAY)
+      } else {
+        setTimeout(()=> {
+          dispatch(receivePosts(binId, []))
+        }, API_DELAY)
+      }
+    }
+
+    // const qs = encodeQueryData({
+    //   token, binId,
+    //   lastViewed: 1453430821034,
+    //   offset: 0,
+    //   limit: 10
+    // })
+
+    // return fetch(API_BASE_URL + '/posts?' + qs)
+    //   .then(delay(API_DELAY))
+    //   .then(checkStatus)
+    //   .then(response => response.json())
+    //   .then(json => {
+    //     return dispatch(receivePosts(binId, json))
+    //   })
+    //   .catch(err => { throw err })
   }
 }
 
-function shouldFetchPosts(state, slug) {
-  const postsInBin = state.posts[slug]
-  if (!postsInBin) {
-    return true
-  } else {
-    return false
-  }
-}
 
-export function fetchPostsIfNeeded({slug, userId, page, postsPerPage}, force=false) {
+export function fetchPostsIfNeeded(binId) {
   return (dispatch, getState) => {
-    console.log('hehehe ', getState())
-    if (shouldFetchPosts(getState(), slug) || force) {
-      return dispatch(fetchPosts({slug, userId, page, postsPerPage}))
+    const {auth, posts} = getState()
+    if (shouldFetchPosts(posts, binId)) {
+      dispatch(fetchPosts(auth.token, binId))
     }
   }
 }
 
-function requestDeletePost(binSlug, id, index) {
+
+function shouldFetchPosts(posts, binId) {
+  const postsInBin = posts.items[binId]
+  if (!postsInBin && !posts.isFetching) {
+    return true
+  }
+  return false
+}
+
+
+
+function requestDeletePost(binId, id) {
   return {
     type: types.REQUEST_DELETE_POST,
-    binSlug, id, index
+    binId, id
   }
 }
 
-function receiveDeletePost(binSlug, id, index, json) {
-  return {
-    type: types.RECEIVE_DELETE_POST,
-    binSlug, id, index,
-    data: json,
-    receivedAt: Date.now()
-  }
-}
+export function deletePost(binId, id) {
+  return (dispatch, getState) => {
+    const {auth} = getState()
+    const url = `${API_BASE_URL}/posts/${id}?token=${auth.token}`
+    const options = {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    }
 
-// thunk
-export function deletePost(binSlug, id, index) {
-  
-  const init = {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify({id})
-  }
-  const apiUrl = API_BASE_URL + "/posts/delete"
-
-  return dispatch => {
-    dispatch(requestDeletePost(binSlug, id, index))
-    // return dispatch(receiveDeletePost(binSlug, id, index, []))
-    return setTimeout( ()=> {
-      
-      return fetch(apiUrl, init)
-        .then(response => response.json())
-        .then(json => {
-          console.log('delete post ', binSlug, id, index, json)
-          return dispatch(receiveDeletePost(binSlug, id, index, json))
-        })
-    }, 500)
-  }
-}
-
-
-
-function requestToggleReaction(userId, postId, emojiId, binSlug) {
-  return {
-    type: types.REQUEST_TOGGLE_REACTION,
-    userId, postId, emojiId, binSlug
-  }
-}
-
-function receiveToggleReaction(userId, postId, emojiId, binSlug, json) {
-  return {
-    type: types.RECEIVE_TOGGLE_REACTION,
-    userId, postId, emojiId, binSlug,
-    data: json,
-    receivedAt: Date.now()
-  }
-}
-
-// thunk
-export function toggleReaction(userId, postId, emojiId, binSlug) {
-  
-  const init = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify({userId, postId, emojiId})
-  }
-  const apiUrl = API_BASE_URL + "/posts/toggleReaction"
-
-  return dispatch => {
-    dispatch(requestToggleReaction(userId, postId, emojiId, binSlug))
-    
-    return setTimeout( ()=> {
-      
-      return fetch(apiUrl, init)
-        .then(response => response.json())
-        .then(json => {
-          console.log('toggle reaction ', userId, postId, emojiId, binSlug, json)
-          return dispatch(receiveToggleReaction(userId, postId, emojiId, binSlug, json))
-        })
-    }, 500)
+    dispatch(requestDeletePost(binId, id))
+    return fetch(url, options)
+      .then(delay(API_DELAY))
+      .then(response => response.json())
+      .then(json => {
+        console.log('deleted post ', json)
+      })
+      .catch(err => { throw err })
   }
 }

@@ -1,6 +1,6 @@
-import * as types from './actionTypes';
-import {API_BASE_URL} from './../config'
-
+import * as types from '../constants/ActionTypes';
+import {API_BASE_URL, API_DELAY} from '../constants/Config'
+import {delay} from '../helpers/utils'
 
 function requestNewPost(post) {
   return {
@@ -22,7 +22,6 @@ function receiveNewPost(post, json) {
 
 export function submitNewPost(post) {
   const {binSlug, url, title, mediaType, author} = post
-  console.log('gogogo post is ', post)
   const init = {
     method: 'PUT',
     headers: {
@@ -35,15 +34,12 @@ export function submitNewPost(post) {
 
   return dispatch => {
     dispatch(requestNewPost(post))
-
-    return setTimeout( ()=> {
-      
-      return fetch(apiUrl, init)
-        .then(response => response.json())
-        .then(json => {
-          console.log('submitNewPost ', post, json)
-          return dispatch(receiveNewPost(post, json))
-        })
-    }, 500)
+  
+    return fetch(apiUrl, init)
+      .then(delay(API_DELAY))
+      .then(response => response.json())
+      .then(json => {
+        return dispatch(receiveNewPost(post, json))
+      })
   }
 }
