@@ -258,7 +258,7 @@ function* closeConnection(next) {
 
 
 
-var API = new router()
+var API = new Router()
 API.get('/title/', getURL)
 API.get('/posts/get', posts.all)
 API.put('/posts/create', posts.create)

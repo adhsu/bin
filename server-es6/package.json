@@ -18,9 +18,18 @@
     "babel-core": "^5.4.0",
     "body-parser": "^1.13.3",
     "compression": "^1.5.2",
+    "connect-ensure-login": "^0.1.1",
+    "cookie-parser": "^1.4.1",
     "cors": "^2.7.1",
     "express": "^4.13.3",
-    "resource-router-middleware": "^0.5.1"
+    "express-session": "^1.13.0",
+    "jsonwebtoken": "^5.5.4",
+    "passport": "^0.3.2",
+    "passport-http-bearer": "^1.0.1",
+    "passport-jwt": "^1.2.1",
+    "passport-twitter": "^1.0.3",
+    "resource-router-middleware": "^0.5.1",
+    "thinky": "^2.2.4"
   },
   "bugs": {
     "url": "https://github.com/developit/express-es6-rest-api/issues"
