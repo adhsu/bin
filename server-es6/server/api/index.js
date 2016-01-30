@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import facets from './facets';
+import {createBin} from './bins' 
+import {createUser} from './users' 
 
 export default function() {
 	var api = Router();
@@ -13,6 +15,9 @@ export default function() {
 			version : '1.0'
 		});
 	});
+
+	api.get('/createBin', createBin)
+	api.get('/createUser', createUser)
 
 	return api;
 }
