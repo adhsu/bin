@@ -1,5 +1,7 @@
 @import "normalize.css";
+@import 'home'
 @import 'nav'
+@import 'bin'
 @import 'post'
 @import 'media'
 @import 'meta'
@@ -7,6 +9,7 @@
 @import 'modal'
 @import 'error'
 @import 'utils'
+@import 'popover'
 
 *
   box-sizing border-box
@@ -14,12 +17,16 @@
 body
   background-color #272E37
   color #fff
+  font-family 'Helvetica Neue', sans-serif
 
   &.modal-open
     overflow hidden
 
 a
   color #fff
+  text-decoration none
+  &:hover
+    text-decoration underline
 
 .container
   padding 75px 0

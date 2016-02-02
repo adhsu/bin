@@ -1,12 +1,12 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux';
 
-import Media from './Media'
-import {submitNewPost} from '../actions/submit'
-import Loading from './Loading'
-import {modalSelector} from '../selectors/modalSelector'
-import {API_BASE_URL} from './../config'
+import Media from '../components/Media'
+import Loading from '../components/Loading'
 
+import {submitNewPost} from '../actions/submit'
+import {modalSelector} from '../selectors/modalSelector'
+import {API_BASE_URL} from '../constants/Config'
 
 class Modal extends Component {
 

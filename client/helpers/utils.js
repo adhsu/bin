@@ -1,6 +1,44 @@
+export function parseQueryString(queryString) {
+  const qsObj = {}
+  if (queryString[0]=='?') {
+    queryString = queryString.substring(1)
+  }
+  const splitArr = queryString.split("&")
+  splitArr.map(piece => {
+    const [key, val] = piece.split('=')
+    qsObj[key] = val
+  })
+  return qsObj
+}
+
+export function encodeQueryData(data) {
+    return Object.keys(data).map(key => {
+        return [key, data[key]].map(encodeURIComponent).join("=")
+    }).join("&")
+}
+
+export function checkStatus(response) {
+  if (response.status >= 200 && response.status < 300) {
+    return response
+  } else {
+    var error = new Error(response.statusText)
+    error.response = response
+    throw error
+  }
+}
+
+export function delay (milliseconds) {
+  return result => {
+    return new Promise((resolve, reject) => {
+      setTimeout(()=>{
+        resolve(result)
+      }, milliseconds)
+    })
+  }
+}
+
 export function createLookupObj (array, key='id') {
   const lookup = {};
-  console.log('key is ', key)
   for (var i = 0, len = array.length; i < len; i++) {
       lookup[array[i][key]] = array[i];
   }
@@ -13,7 +51,8 @@ export function findById (sourceArray, id) {
       return sourceArray[i];
     }
   }
-  throw "Couldn't find object with id: " + id;
+  // throw "Couldn't find object with id: " + id;
+  return false
 }
 
 // ripped from underscore.js
@@ -53,3 +92,7 @@ export function _throttle(func, wait, options) {
     return result;
   };
 };
+
+export function sortArr (arr) {
+  return arr.sort( (a,b)=> b-a )
+}

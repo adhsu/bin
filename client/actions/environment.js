@@ -1,5 +1,12 @@
-import * as types from './actionTypes';
 import {_throttle} from '../helpers/utils'
+import * as types from '../constants/ActionTypes';
+
+export function displayError(message) {
+  return {
+    type: types.DISPLAY_ERROR,
+    message
+  }
+}
 
 function changeIsMobile(isMobile) {
   return {

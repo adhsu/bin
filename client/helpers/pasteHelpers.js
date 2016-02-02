@@ -1,4 +1,4 @@
-import {displayError} from '../actions/actions'
+import {displayError} from '../actions/environment'
 
 const validatePaste = (data) => {
 
@@ -17,12 +17,15 @@ const validatePaste = (data) => {
 
   const isUrl = data.indexOf(" ")==-1 && data.split('.').length >=2
   if (isUrl) {
-    return {
+    const validPost = {
       url: data,
       mediaType: getMediaType(data)
     }
+    console.log('valid paste', validPost)
+    return validPost
 
   } else {
+    console.log('not a valid paste')
     return false;
   }
 }
@@ -32,6 +35,7 @@ const getTitle = (url) => {
 }
 
 export function handlePaste(dispatch, event) {
+  console.log('handlePaste')
   const clipboardData = event.clipboardData.getData('text')
   const validPost = validatePaste(clipboardData)
   if (validPost) {
