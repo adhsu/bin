@@ -1,17 +1,22 @@
-import http from 'http';
-import express from 'express';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import db from './db';
-import middleware from './middleware';
-import api from './api';
+import http from 'http'
+import express from 'express'
+import cors from 'cors'
+import bodyParser from 'body-parser'
+import middleware from './middleware'
+import api from './api'
 import session from 'express-session'
 import config from "./../config"
 import {ensureLoggedIn} from 'connect-ensure-login'
 const authRequired = ensureLoggedIn('/noAuth')
-import {r, type, Errors} from'./utils/thinky.js'
+import {r, type, Errors} from'./utils/thinky'
+import {grabTitle} from './utils/scraper'
+
+
 
 import * as binCtrl from './api/bins'
+import * as postCtrl from './api/posts'
+import * as userCtrl from './api/users'
+import * as reactionCtrl from './api/reactions'
 // import auth from './auth'
 // import authRouter from './auth/auth-router'
 
@@ -19,6 +24,7 @@ import * as binCtrl from './api/bins'
 import tokenAuth from './utils/tokenAuth'
 import isAuthorized from './policies/isAuthorized'
 import isCurrentUser from './policies/isCurrentUser'
+import isInBin from './policies/isInBin'
 
 import passport from 'passport'
 import {Strategy as TwitterStrategy} from 'passport-twitter'
@@ -159,27 +165,60 @@ app.get('/', function (req, res) {
   res.send(req.user);
 });
 
+app.post("/title",grabTitle)
+
 app.get('/user', 
 	isAuthorized,
-	isCurrentUser,
 	function(req, res) {
 	  res.send(req.user)
 	})
 
-app.get('/bins/:binId/join', 
+app.post('/bins/:binId/join', 
 	isAuthorized,
-	isCurrentUser,
 	binCtrl.joinBin)
 
-app.get('/createBin', 
+app.get('/createBin/:binId', 
 	isAuthorized,
-	isCurrentUser,
 	binCtrl.createBin)
-// app.get('/user', 
-// 	passport.authenticate('jwt', { session: false},
-// 	function(req, res) {
-// 	  res.send(req.user)
-// 	}))
+
+app.get('/bins', 
+	isAuthorized,
+	binCtrl.fetchUserBins)
+
+
+app.post('/posts', 
+	isAuthorized,
+	isInBin,
+	postCtrl.createPost)
+
+app.delete('/posts/:postId', 
+	isAuthorized,
+	postCtrl.deletePost)
+
+
+app.get('/posts', 
+	isAuthorized,
+	isInBin,
+	postCtrl.fetchPosts)
+
+app.get('/me', 
+	isAuthorized,
+	userCtrl.fetchAuthedUser)
+
+app.put('/reactions/:binId/:postId/:emojiId',
+	isAuthorized,
+	isInBin,
+	reactionCtrl.addReaction)
+
+app.delete('/reactions/:binId/:postId/:emojiId',
+	isAuthorized,
+	isInBin,
+	reactionCtrl.deleteReaction)
+
+app.get('/reactions',
+	isAuthorized,
+	isInBin,
+	reactionCtrl.fetchReactions)
 
 app.get('/noAuth', function(req,res) {
 	res.json({loginStatus: false})
@@ -191,19 +230,19 @@ app.get('/auth/logout/twitter', function(req, res) {
 })
 
 
+app.server.listen(process.env.PORT || 3000);
 
+console.log(`Started on port ${app.server.address().port}`);
 // connect to db
-db( λ => {
+// db( λ => {
 
-	// internal middleware
-	app.use(middleware());
+// 	// internal middleware
+// 	app.use(middleware());
 
-	// api router
-	app.use('/api', api());
+// 	// api router
+// 	app.use('/api', api());
 
-	app.server.listen(process.env.PORT || 3000);
-
-	console.log(`Started on port ${app.server.address().port}`);
-});
+	
+// });
 
 export default app;

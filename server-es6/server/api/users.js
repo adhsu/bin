@@ -1,6 +1,4 @@
-import resource from 'resource-router-middleware';
-
-var thinky = require('./../utils/thinky.js')
+import thinky from './../utils/thinky'
 var r = thinky.r
 var type = thinky.type
 
@@ -9,20 +7,16 @@ var Bin = require('./../models/bins')
 var Post = require('./../models/posts')
 var User = require('./../models/users')
 
-export let createUser = function(req, res) {
-  let user = new User({
-    id: "adhsu",
-    email: "adhsu@gmail.com"
-  })
-
-  Bin.get("fell").run().then(function(bin){
-    user.bins = [bin]
-    user.saveAll({bins: true}).then(function(result){
-      User.getJoin("")
-      res.send(result)
-    })
-  })
-
-
+// fetchAuthedUser
+// GET /api/me
+// query params {auth_token}
+// => {userObj}
+export function fetchAuthedUser(req, res) {
   
+  const userId = req.token.id
+  
+  User.get(userId).run().then(function(user){
+    res.json(user)
+  })
+
 }

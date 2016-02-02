@@ -30,61 +30,19 @@ passport.deserializeUser(function (id, done) {
 var loginCallbackHandler = function (objectMapper, type) {
   return function (accessToken, refreshToken, profile, done) {
     if (accessToken !== null) {
-      console.log('logged in')
-      console.log(objectMapper(profile))
 
       User.get(profile.username).run().then(function(users){
-        console.log(users)
         return done(null, users[0]);
-
         
       }).catch(Errors.DocumentNotFound, function(err) {
         let user = new User(objectMapper(profile))
-        // ToDo: add default bin
+        // ToDo: add default bin - or have that be a step after signing in?
         return user.save().then(function(response) {
-            return User.get(response.generated_keys[0]).run()
-          })
+          return User.get(response.generated_keys[0]).run()
+        })
       }).then(function (newUser) {
         done(null, newUser)
       })
-        // r.table('users')
-        //   .insert(objectMapper(profile))
-        //   .run(r.conn)
-        //   .then(function (response) {
-        //     return r.table('users')
-        //       .get(response.generated_keys[0])
-        //       .run(r.conn);
-        //   })
-        //   .then(function (newUser) {
-        //     done(null, newUser);
-        //   })
-      // r
-      //   .table('users')
-      //   .getAll(profile.username, { index: 'login' })
-      //   .filter({ type: type })
-      //   .run(r.conn)
-      //   .then(function (cursor) {
-      //     return cursor.toArray()
-      //       .then(function (users) {
-      //         if (users.length > 0) {
-      //           return done(null, users[0]);
-      //         }
-      //         return r.table('users')
-      //           .insert(objectMapper(profile))
-      //           .run(r.conn)
-      //           .then(function (response) {
-      //             return r.table('users')
-      //               .get(response.generated_keys[0])
-      //               .run(r.conn);
-      //           })
-      //           .then(function (newUser) {
-      //             done(null, newUser);
-      //           });
-      //       });
-      //   })
-      //   .catch(function (err) {
-      //     console.log('Error Getting User', err);
-      //   });
     }
   };
 };

@@ -17,7 +17,7 @@ export default function() {
 	});
 
 	api.get('/createBin', createBin)
-	api.get('/createUser', createUser)
+	// api.get('/createUser', createUser)
 
 	return api;
 }

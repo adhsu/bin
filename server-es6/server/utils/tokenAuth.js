@@ -4,7 +4,7 @@ module.exports.issue = function(payload) {
   return jwt.sign(
     payload,
     process.env.TOKEN_SECRET || "princess",
-    { expiresIn : 7200 }
+    { expiresIn : 97200 }
     );
 };
 

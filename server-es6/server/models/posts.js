@@ -20,10 +20,13 @@ module.exports = Post;
 
 var User = require('./users')
 var Bin = require('./bins')
+var Reaction = require('./reactions')
 // a post belongs to a user
 Post.belongsTo(User, "author", "authorId", "id")
 // a post belongs to a bin
 Post.belongsTo(Bin, "bin", "binId", "id")
+// a post has many reactions
+Post.hasMany(Reaction, "reactions", "id", "postId")
 
 Post.ensureIndex("createdAt");
 Post.ensureIndex("binId_createdAt", function(doc) {

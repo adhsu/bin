@@ -24,6 +24,7 @@
     "express": "^4.13.3",
     "express-session": "^1.13.0",
     "jsonwebtoken": "^5.5.4",
+    "node-metainspector": "^1.2.0",
     "passport": "^0.3.2",
     "passport-http-bearer": "^1.0.1",
     "passport-jwt": "^1.2.1",
