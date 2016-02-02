@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import facets from './facets';
+// import facets from './facets';
 import {createBin} from './bins' 
 import {createUser} from './users' 
 
