@@ -6,8 +6,6 @@ import middleware from './middleware'
 import api from './api'
 import session from 'express-session'
 import config from "./../config"
-import {ensureLoggedIn} from 'connect-ensure-login'
-const authRequired = ensureLoggedIn('/noAuth')
 import {r, type, Errors} from'./utils/thinky'
 import {grabTitle} from './utils/scraper'
 
@@ -17,8 +15,7 @@ import * as binCtrl from './api/bins'
 import * as postCtrl from './api/posts'
 import * as userCtrl from './api/users'
 import * as reactionCtrl from './api/reactions'
-// import auth from './auth'
-// import authRouter from './auth/auth-router'
+
 
 
 import tokenAuth from './utils/tokenAuth'
@@ -69,37 +66,22 @@ passport.use(new TwitterStrategy({
 	      'type': 'twitter'
 	    };
 	  }
-    // In this example, the user's Twitter profile is supplied as the user
-    // record.  In a production-quality application, the Twitter profile should
-    // be associated with a user record in the application's database, which
-    // allows for account linking and authentication with other identity
-    // providers.
     User.get(profile.username).run().then(function(user){
-    	// We already have a user with this strategy, pass down the access_token we already have for them
-      // let user = users[0]
+
       user.token = tokenAuth.issue({id: user.id})
       return done(null, user);
       
     }).catch(Errors.DocumentNotFound, function(err) {
-    	// First time for user, create them and pass down the generated access_token
+
       let user = new User(objectMapper(profile))
-      // ToDo: add default bin
+
       user.save().then(function(newUser) {
       	newUser.token = tokenAuth.issue({id: newUser.id})
       	done(null, newUser)
-        // User.get(response.id).run().then(function(newUser){
-        // 	newUser.token = tokenAuth.issue({id: newUser.id})
-        // 	done(null, newUser)
-        // })
+
       })
     })
-    // .then(function (newUser) {
-    // 	console.log(newUser)
-    //   newUser.token = tokenAuth.issue({id: newUser.id})
-    //   done(null, newUser)
-    // })
 
-    // return cb(null, profile);
   }
 ))
 
@@ -138,8 +120,8 @@ app.use(bodyParser.json({
 
 app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
 
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.initialize())
+app.use(passport.session())
 
 
 app.get('/',
@@ -147,19 +129,16 @@ app.get('/',
     res.send(req.user);
 	});
 
-app.get('/auth/login/twitter', passport.authenticate('twitter', {session: false}));
+app.get('/auth/login/twitter', passport.authenticate('twitter', {session: false}))
 
 app.get('/auth/login/callback/twitter', 
   passport.authenticate('twitter', {failureRedirect: '/'}),
   	function(req, res) {
-      // res.sendFile(__dirname + '/html/callback.html')
       res.redirect('http://127.0.0.1:3333/login?foo=bar&access_token='+req.user.token)
   		// res.send("/user?access_token=" + req.user.token)
   	}
-  );
+  )
 
-let evens = [0,2,4,6]
-let odds = evens.map(v => v + 1);
 
 app.get('/', function (req, res) {
 	console.log(req)
@@ -234,8 +213,7 @@ app.get('/auth/logout/twitter', function(req, res) {
 app.server.listen(process.env.PORT || 3000);
 
 console.log(`Started on port ${app.server.address().port}`);
-// connect to db
-// db( λ => {
+
 
 // 	// internal middleware
 // 	app.use(middleware());
@@ -244,6 +222,6 @@ console.log(`Started on port ${app.server.address().port}`);
 // 	app.use('/api', api());
 
 	
-// });
+
 
 export default app;

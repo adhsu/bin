@@ -1,4 +1,3 @@
-import resource from 'resource-router-middleware';
 import {r, type, Errors} from'./../utils/thinky.js'
 
 var Bin = require('./../models/bins')
