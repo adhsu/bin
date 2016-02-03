@@ -7,7 +7,10 @@ class Home extends React.Component {
     const {auth} = this.props
     if (!auth.user) {
       return (
-        <p>Share pictures, videos, and links with your close friends.</p>
+        <div>
+          <p>Share pictures, videos, and links with your close friends.</p>
+          <p>Sign in with Twitter to use Bin.</p>
+        </div>
       )
     }
     

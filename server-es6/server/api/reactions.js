@@ -54,12 +54,12 @@ export function deleteReaction(req, res) {
 }
 
 // fetchReactions
-// GET /api/reactions
+// GET /reactions
 // query params {auth_token}
 // => array of reaction objects [ {id, postId, emojiId, createdAt} ]
 export function fetchReactions(req, res) {
   const userId = req.token.id
-  Reaction.getJoin(userId).run().then(function(reactions) {
+  Reaction.getAll(userId, {index: 'userId'}).run().then(function(reactions) {
     res.json(reactions)
   }).catch(Errors.DocumentNotFound, function(err){
     res.send('none found')

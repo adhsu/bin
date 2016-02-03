@@ -1,4 +1,4 @@
-import {_throttle} from '../helpers/utils'
+import {_debounce, _throttle} from '../helpers/utils'
 import * as types from '../constants/ActionTypes';
 
 export function displayError(message) {
@@ -33,9 +33,9 @@ export function initEnvironment() {
     dispatch(changeIsMobile(isMobile));
     dispatch(changeWidthAndHeight(window.innerHeight, window.innerWidth));
 
-    window.addEventListener('resize', _throttle(
+    window.addEventListener('resize', _debounce(
       () => dispatch(changeWidthAndHeight(window.innerHeight, window.innerWidth))
-      , 1000)
+      , 500)
     )
   };
 }

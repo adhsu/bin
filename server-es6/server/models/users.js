@@ -9,7 +9,7 @@ var User = thinky.createModel("User", {
   url: type.string(),
   avatarUrl: type.string(),
   type: type.string(),
-  createdAt: type.date().default(r.now())
+  createdAt: type.date().default(r.now().toEpochTime().mul(1000)),
 });
 
 module.exports = User;

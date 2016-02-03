@@ -12,9 +12,9 @@ export default class EmojiPicker extends Component {
   }
 
   handleClick(emojiId, event) {
-    const {toggleReaction} = this.props
+    const {addReaction} = this.props
     this.setState({pickerIsOpen:false})
-    toggleReaction(emojiId)
+    addReaction(emojiId)
   }
   
   togglePicker() {

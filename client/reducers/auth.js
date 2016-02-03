@@ -3,27 +3,49 @@ import update from 'react-addons-update'
 
 const initialState = {
     token: null,
-    user: null
+    user: null,
+    authLoading: true
 }
 
 export default function auth(state=initialState, action) {
   switch(action.type) {
+    case types.REQUEST_AUTH:
+      return Object.assign({}, state, {
+        authLoading: true
+      })
 
     case types.RECEIVE_AUTH:
       const {user, token} = action
-      if (!user.bins) { user.bins=[] }
+      if (user && !user.bins) { user.bins=[] }
       return Object.assign({}, state, {
-        user, token
+        user, 
+        token,
+        authLoading: false
       })
 
     case types.RESET_AUTHED:
-      return Object.assign({}, initialState)
+      return Object.assign({}, initialState, {
+        authLoading: false
+      })
     
-    case types.RECEIVE_BIN:
-      console.log('received bin', action)
+    case types.RECEIVE_JOIN_BIN:
+      console.log('received join_bin', action)
       return update(state, {
         user: {
           bins: {$push: [action.bin]}
+        }
+      })
+
+    case types.REQUEST_EDIT_BIN_TITLE:
+      console.log('reducer edit title', action)
+      return update(state, {
+        user: {
+          bins: {$apply: x => x.map(bin => {
+            if (bin.id==action.binId) {
+              bin.title = action.title
+            }
+            return bin
+          })} 
         }
       })
 

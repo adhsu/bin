@@ -5,7 +5,7 @@ var type = thinky.type;
 var Bin = thinky.createModel("Bin", {
   id: type.string(),
   title: type.string(),
-  createdAt: type.date().default(r.now()),
+  createdAt: type.date().default(r.now().toEpochTime().mul(1000)),
   inviteCode: type.string()
 })
 

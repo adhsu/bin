@@ -7,7 +7,7 @@ var Reaction = thinky.createModel("Reaction", {
   userId: type.string(),
   postId: type.string(),
   emojiId: type.string(),
-  createdAt: type.date().default(r.now())
+  createdAt: type.date().default(r.now().toEpochTime().mul(1000)),
 })
 
 module.exports = Reaction;

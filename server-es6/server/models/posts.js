@@ -11,7 +11,7 @@ var Post = thinky.createModel("Post", {
     id: type.string(),
     users: [type.string()]
   }],
-  createdAt: type.date().default(r.now()),
+  createdAt: type.date().default(r.now().toEpochTime().mul(1000)),
   authorId: type.string(),
   binId: type.string()
 })
@@ -28,7 +28,5 @@ Post.belongsTo(Bin, "bin", "binId", "id")
 // a post has many reactions
 Post.hasMany(Reaction, "reactions", "id", "postId")
 
-Post.ensureIndex("createdAt");
-Post.ensureIndex("binId_createdAt", function(doc) {
-  return doc("binId").add(doc("createdAt"))
-})
+Post.ensureIndex("createdAt")
+Post.ensureIndex("binId_createdAt", [r.row('binId'), r.row('createdAt')])

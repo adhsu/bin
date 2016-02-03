@@ -4,7 +4,6 @@ import Reactions from './Reactions'
 import Time from './Time'
 import Source from './Source'
 
-import {toggleReaction} from '../actions/reactions'
 import {deletePost} from '../actions/posts'
 const closeImg = require('../static/images/close.svg')
 
@@ -13,7 +12,6 @@ class Post extends Component {
 
   constructor() {
     super()
-    this.toggleReaction = this.toggleReaction.bind(this)
     this.delete = this.delete.bind(this)
   }
 
@@ -21,12 +19,6 @@ class Post extends Component {
     const {dispatch, post} = this.props
     const {id, binId} = post
     dispatch(deletePost(id, binId))
-  }
-
-  toggleReaction(emojiId) {
-    const {dispatch, post} = this.props
-    const {binId, id} = post
-    // dispatch(toggleReaction(currentUser.id, id, emojiId, binSlug))
   }
 
   processUrl(url) {
@@ -39,8 +31,7 @@ class Post extends Component {
 
   renderDelete() {
     const {auth, post} = this.props
-    console.log('postid', auth.user.id, post.author)
-    // if (auth.user.id == post.author) { return; }
+    if (auth.user.id !== post.authorId) { return; }
     return (
       <div className="post-close" onClick={e=>this.delete(e)}>
         <img src={closeImg} />
@@ -48,8 +39,8 @@ class Post extends Component {
     )
   }
   render() {
-    const {dispatch, auth, post} = this.props
-    const {id, binId, title, url, mediaType, createdAt, reactions} = post
+    const {dispatch, auth, post, reactions} = this.props
+    const {id, binId, title, url, mediaType, createdAt} = post
 
     return (
       <div className='post post-style1'>
@@ -60,17 +51,14 @@ class Post extends Component {
         
         <div className="post-meta">
 
-          <Reactions toggleReaction={this.toggleReaction} reactions={reactions} />
+          <Reactions {...this.props} />
 
           <div className="post-meta-right">
 
             <Source url={url}/>
             {' '}&#183;{' '}
             <Time timestamp={createdAt}/>
-            {' '}&#183;{' '}
-            <span>bin/{binId}</span>
             
-
           </div>
         </div>
         

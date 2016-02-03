@@ -1,3 +1,10 @@
+export function scrolledToBottom(offset=0) {
+  const scrollTop = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop
+  const scrollHeight = (document.documentElement && document.documentElement.scrollHeight) || document.body.scrollHeight
+  const scrolledToBottom = (scrollTop + window.innerHeight) >= scrollHeight-offset
+  return scrolledToBottom
+}
+
 export function parseQueryString(queryString) {
   const qsObj = {}
   if (queryString[0]=='?') {
@@ -106,3 +113,18 @@ export function _throttle(func, wait, options) {
 export function sortArr (arr) {
   return arr.sort( (a,b)=> b-a )
 }
+
+export function _debounce(func, wait, immediate) {
+  var timeout;
+  return function() {
+    var context = this, args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+};

@@ -34,7 +34,6 @@ class Modal extends Component {
   componentWillReceiveProps(nextProps) {
     const title = nextProps.modal.fetchedTitle
     const isLoadingTitle = nextProps.modal.isLoadingTitle
-    console.log('new props, title is ', title, isLoadingTitle)
     if (this.props.modal.isLoadingTitle && !isLoadingTitle) {
       if (title && title!=="") { this.refs.title.value = title }
       this.refs.title.focus()
@@ -72,8 +71,9 @@ class Modal extends Component {
   }
 
   renderSubmit() {
-    const { posts } = this.props
-    if (posts.isCreating) {
+    const { posts, params } = this.props
+    const {binId} = params
+    if (posts[binId].isCreating) {
       return (
         <div className="modal-submit-wrapper">
           <Loading className="modal-submit-loading" size="25" />

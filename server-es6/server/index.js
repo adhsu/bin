@@ -139,7 +139,6 @@ app.get('/auth/login/callback/twitter',
   	}
   )
 
-
 app.get('/', function (req, res) {
 	console.log(req)
   res.send(req.user);
@@ -157,14 +156,20 @@ app.post('/bins/:binId/join',
 	isAuthorized,
 	binCtrl.joinBin)
 
-app.get('/createBin/:binId', 
+app.post('/bins/:id', 
 	isAuthorized,
 	binCtrl.createBin)
+
+app.post('/bins/:id/title',
+  isAuthorized,
+  binCtrl.editBinTitle)
 
 app.get('/bins', 
 	isAuthorized,
 	binCtrl.fetchUserBins)
 
+app.get('/bins/:id',
+  binCtrl.fetchBin)
 
 app.post('/posts', 
 	isAuthorized,
@@ -197,7 +202,6 @@ app.delete('/reactions/:binId/:postId/:emojiId',
 
 app.get('/reactions',
 	isAuthorized,
-	isInBin,
 	reactionCtrl.fetchReactions)
 
 app.get('/noAuth', function(req,res) {

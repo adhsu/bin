@@ -1,14 +1,14 @@
 import {r, type, Errors} from'./../utils/thinky.js'
-
 var Bin = require('./../models/bins')
 var Post = require('./../models/posts')
 var User = require('./../models/users')
 
-
-
+// createBin
+// POST /api/bins/:id
+// query params {token}
+// => bin
 export function createBin(req, res) {
-
-  const binId = req.params.binId
+  const binId = req.params.id
   const userId = req.token.id
 
   Bin.get(binId).getJoin({users: true}).run().then(function(bin){
@@ -20,8 +20,6 @@ export function createBin(req, res) {
       title: 'Change the title fool!',
       invite_code: 'random'
     })
-
-    
 
     User.get(userId).run().then(function(user){
       bin.users = [user]
@@ -52,13 +50,38 @@ export function joinBin(req, res) {
       User.get(userId).run().then(function(user){
         bin.users.push(user)
         bin.saveAll({users: true}).then((result) => {
-          res.send(bin)
+          res.send({
+            ok: true,
+            bin
+          })
         })
       }) 
+    } else {
+      res.send({
+        ok: false,
+        message: 'Sorry, your invite code is wrong. Try again!'
+      })
     }
     
   }).catch(Errors.DocumentNotFound, function(err) {
     res.json({err: 'Bin does not exist.'})
+  })
+}
+
+// editBinTitle
+// POST /api/bins/:id/title
+// query params {token}
+// body {title}
+// => {ok: true}
+export function editBinTitle(req, res) {
+  const binId = req.params.id
+  const userId = req.token.id
+  const title = req.body.title
+  Bin.get(binId).update({title}).run().then(function(bin) {
+    res.json({
+      ok: true,
+      bin
+    })
   })
 }
 
@@ -74,3 +97,20 @@ export function fetchUserBins(req, res) {
   })
 }
 
+// GET /api/bins/:id
+// query params {token}
+// => {ok: true}
+export function fetchBin(req, res) {
+  const binId = req.params.id
+
+  Bin.get(binId).run().then(function(bin){
+    // bin exists 
+    res.send({ok: true, exists: true})
+  }).catch(Errors.DocumentNotFound, function(err) {
+    res.json({
+      ok: false,
+      exists: false,
+      err: 'Bin does not exist.'
+    })
+  })
+}

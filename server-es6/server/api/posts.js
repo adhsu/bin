@@ -52,10 +52,19 @@ export function deletePost(req, res) {
 
 export function fetchPosts(req, res) {
   const binId = req.query.binId
+  const lastViewed = +req.query.lastViewed || Date.now()
+  const offset = +req.query.offset || 0
+  const limit = +req.query.limit || 3
 
-  Post.filter({binId: binId}).getJoin({
-    reactions: true
-  }).run().then(function(posts) {
+  Post.between([binId, r.minval], [binId, r.maxval], {index: "binId_createdAt"})
+    .orderBy({index: r.desc('binId_createdAt')})
+    .getJoin({reactions: true})
+    .filter(function (post) {
+      return post("createdAt").lt(lastViewed);
+    })
+    .skip(offset)
+    .limit(limit)
+    .run().then(function(posts) {
 
     // Go through every post object and flatten the reactions array
 

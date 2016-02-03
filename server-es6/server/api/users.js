@@ -16,5 +16,4 @@ export function fetchAuthedUser(req, res) {
   User.get(userId).getJoin({bins: {users: {avatarUrl: true, id: true, name: true}}}).run().then(function(user){
     res.json(user)
   })
-
 }

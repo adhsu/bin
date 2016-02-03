@@ -4,29 +4,17 @@ import {API_BASE_URL, API_DELAY} from '../constants/Config'
 import {checkStatus, delay, encodeQueryData} from '../helpers/utils'
 import {resetModal} from '../actions/modal'
 
-function requestPosts() {
+function requestCreatePost(binId) {
   return {
-    type: types.REQUEST_POSTS
+    type: types.REQUEST_CREATE_POST,
+    binId
   }
 }
 
-function receivePosts(posts, binId) {
-  return {
-    type: types.RECEIVE_POSTS,
-    posts, binId
-  }
-}
-
-function requestCreatePost() {
-  return {
-    type: types.REQUEST_CREATE_POST
-  }
-}
-
-function receiveCreatePost(post) {
+function receiveCreatePost(post, binId) {
   return {
     type: types.RECEIVE_CREATE_POST,
-    post
+    post, binId
   }
 }
 
@@ -37,17 +25,31 @@ function requestDeletePost(id, binId) {
   }
 }
 
-export function fetchPosts(token, binId) {
+function requestPosts(binId) {
+  return {
+    type: types.REQUEST_POSTS,
+    binId
+  }
+}
+
+function receivePosts(posts, binId) {
+  return {
+    type: types.RECEIVE_POSTS,
+    posts, binId
+  }
+}
+
+
+
+export function fetchPosts(token, binId, lastViewed=Date.now(), offset=0, limit=3) {
   console.log('actions/fetchPosts for bin ', binId)
   return dispatch => {
-    dispatch(requestPosts())
+    dispatch(requestPosts(binId))
 
     const qs = encodeQueryData({
       auth_token: token,
       binId,
-      lastViewed: 1453430821034,
-      offset: 0,
-      limit: 10
+      lastViewed, offset, limit
     })
 
     return fetch(API_BASE_URL + '/posts?' + qs)
@@ -65,14 +67,16 @@ export function fetchPostsIfNeeded(binId) {
   return (dispatch, getState) => {
     const {auth, posts} = getState()
     if (shouldFetchPosts(posts, binId)) {
+      console.log('should fetch posts')
       dispatch(fetchPosts(auth.token, binId))
     }
+    console.log('not needed')
   }
 }
 
 function shouldFetchPosts(posts, binId) {
-  const postsInBin = posts.items[binId]
-  if (!postsInBin && !posts.isFetching) {
+  const postsInBin = posts[binId]
+  if (!postsInBin) {
     return true
   }
   return false
@@ -89,13 +93,13 @@ export function createPost(post) {
       body: JSON.stringify(post)
     }
     
-    dispatch(requestCreatePost())
+    dispatch(requestCreatePost(binId))
     return fetch(apiUrl, options)
       .then(delay(API_DELAY))
       .then(response => response.json())
       .then(json => {
         console.log('received ', json)
-        dispatch(receiveCreatePost(json))
+        dispatch(receiveCreatePost(json, binId))
         dispatch(resetModal())
       })
       .catch(err => { throw err })

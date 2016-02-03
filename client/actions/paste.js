@@ -22,7 +22,6 @@ function validatePaste(data) {
       url: data,
       mediaType: getMediaType(data)
     }
-    console.log('valid paste', validPost)
     return validPost
 
   } else {

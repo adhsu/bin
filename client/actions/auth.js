@@ -15,8 +15,10 @@ export function initAuth() {
     console.log('initAuth with token', token)
     if (token) {
       dispatch(fetchAuthedUser(token))
+    } else {
+      dispatch(receiveAuth(null, null))
+      return null
     }
-    return null
   }
 }
 
@@ -39,6 +41,7 @@ export function logoutUser() {
 
 export function fetchAuthedUser(token) {
   return dispatch => {
+    dispatch(requestAuth())
     return fetch(`${API_BASE_URL}/me?auth_token=${token}`)
       .then(delay(API_DELAY))
       .then(response => response.json())
@@ -46,7 +49,6 @@ export function fetchAuthedUser(token) {
         return dispatch(receiveAuthedUserPre(token, json))
       })
       .catch(err => { throw err; })
-
   }
 }
 
@@ -85,6 +87,12 @@ export function updateUser(update) {
     //     return dispatch(receiveAuthedUser(json))
     //   })
     //   .catch(err => { throw err; })
+  }
+}
+
+function requestAuth() {
+  return {
+    type: types.REQUEST_AUTH
   }
 }
 

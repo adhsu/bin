@@ -1,24 +1,29 @@
 import React, { Component, PropTypes } from 'react'
 import emojis from '../helpers/emojis'
-import {toggleReaction} from '../actions/posts'
 
 class Reaction extends Component {
 
-  handleClick(e) {
-    const {emojiId, toggleReaction} = this.props
-    toggleReaction(emojiId)
+  constructor() {
+    super()
+    this.setReaction = this.setReaction.bind(this)
+  }
+
+  setReaction(e) {
+    const {reacted, emojiId, addReaction, deleteReaction} = this.props
+    console.log('setreaction', reacted, emojiId)
+    reacted ? deleteReaction(emojiId) : addReaction(emojiId)
   }
 
   render() {
-    const {emojiId, reactionObj} = this.props
-
+    const {emojiId, count, reacted} = this.props
+    
     return (
       <div 
-        className={reactionObj.userVoted ? 'reaction reacted' : 'reaction'}
-        onClick={e=>this.handleClick(e)} >
+        className={'reaction ' + (reacted ? 'reacted' : null)}
+        onClick={e=>this.setReaction(e)} >
         
         <span className="reaction-emoji">{emojis[emojiId]}</span>
-        <span className="reaction-num">{reactionObj.num}</span>
+        <span className="reaction-num">{count}</span>
 
       </div>
     )

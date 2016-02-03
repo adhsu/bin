@@ -1,71 +1,71 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import {routeActions} from 'react-router-redux'
 
 import Posts from '../components/Posts'
 import Error from '../components/Error'
-import BinPasswordInput from '../components/BinPasswordInput'
+import JoinBin from '../components/JoinBin'
+import CreateBin from '../components/CreateBin'
 
 import {_throttle, findById} from '../helpers/utils'
-import {binSelector} from '../selectors/binSelector'
 import {fetchPosts, fetchPostsIfNeeded} from '../actions/posts'
-import {fetchBin} from '../actions/bins'
+import {checkBinExists} from '../actions/bins'
 
 class Bin extends React.Component {
 
   constructor(props) {
     super(props);
     const {environment} = this.props
-    
     this.state = {
-      error: environment.error,
+      error: environment.error
     }
-    
   }
 
   componentWillMount() {
-    const {dispatch, auth, params, environment, posts, bins} = this.props
+    const {dispatch, auth, params} = this.props
     const {binId} = params
-
-    // go to a new bin -> fetch limited details for that bin
-    if (auth.user && !(findById(auth.user.bins, binId))) {
-      console.log('you are not in this bin, fetch bin')
-      dispatch(fetchBin(binId))
-    }
+    dispatch(checkBinExists(binId))
+    if (!auth.user) { dispatch(routeActions.push('/')) }
   }
 
-
   componentWillReceiveProps(nextProps) {
-    const {dispatch} = this.props
+    const {dispatch, params} = this.props
+    const {binId} = params
+
+    const newBinId = nextProps.params.binId
     // update local state with new view error from redux
     this.setState({error:nextProps.environment.error})
 
-    const numNewPosts = nextProps.posts.length - this.props.posts.length
-    if (numNewPosts<5 && numNewPosts>0) {
-      this.setState({hasMore: false})
+    if (binId !== newBinId) {
+      dispatch(checkBinExists(binId))
     }
   }
 
   renderContent() {
-    const {dispatch, auth, params, posts, bins, routing} = this.props
+    const {dispatch, auth, bin, params, posts, routing} = this.props
     const {binId} = params
     
-    if (!auth.user) { 
-      return (
-        <BinPasswordInput {...this.props} />
-      )
+    if (!bin.checked) { return; }
+
+    // logged out, bin exists => show join
+    // logged out, bin doesn't exist => show create
+    if (!auth.user) {
+      return bin.exists ? <JoinBin {...this.props} /> : <CreateBin {...this.props} />
     }
 
-    const isMemberOfBin = findById(auth.user.bins, binId)
-    if (!isMemberOfBin) {
-      return (
-        <BinPasswordInput {...this.props} />
-      )
+    const isMember = findById(auth.user.bins, binId)
+    // logged in
+    if (auth.user) {
+      // bin doesn't exist => show create
+      if (!bin.exists) {
+        return <CreateBin {...this.props} />
+      }
+      // bin exists, member => show posts
+      // bin exists, not member => show join
+      if (bin.exists) {
+        return isMember ? <Posts {...this.props} /> : <JoinBin {...this.props} />
+      }
     }
-    return (
-      <div>
-        <Posts {...this.props} />
-      </div>
-    )
   }
 
   renderError() {
@@ -93,8 +93,8 @@ class Bin extends React.Component {
 }
 
 function mapStateToProps(state) {
-  const {auth, environment, modal, posts, routing} = state
-  return {auth, environment, modal, posts, routing}
+  const {auth, bin, environment, modal, posts, reactions, routing} = state
+  return {auth, bin, environment, modal, posts, reactions, routing}
 }
 
 export default connect(mapStateToProps)(Bin)
