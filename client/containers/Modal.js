@@ -1,11 +1,12 @@
 import React, {Component} from 'react'
+import ReactDOM from 'react-dom'
 import {connect} from 'react-redux';
 
 import Media from '../components/Media'
 import Loading from '../components/Loading'
 
-import {submitNewPost} from '../actions/submit'
-import {modalSelector} from '../selectors/modalSelector'
+import {createPost} from '../actions/posts'
+import {fetchTitle, resetModal} from '../actions/modal'
 import {API_BASE_URL} from '../constants/Config'
 
 class Modal extends Component {
@@ -14,43 +15,12 @@ class Modal extends Component {
     super(props);
     this.submit = this.submit.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
-    
-    this.state = {
-      fetchedTitle: "",
-      titleIsLoading: true
-    }
-    
   }
 
-  fetchTitle(url) {
-    fetch(`${API_BASE_URL}/title/?url=${url}`)
-      .then(response => {
-        if (response.ok) {
-          return response.json()
-        } else {
-          this.refs.title.focus()
-          console.log('fetch title network response not ok')
-        }
-      })
-      .then(json => {
-        console.log('fetchTitle ', url, json)
-        if (this.refs.title) {
-          console.log('state is ', this.state)
-          this.refs.title.value = json.ogTitle || json.title
-          this.setState({titleIsLoading : false})
-        }
-      })
-      .catch(error => {
-        this.setState({titleIsLoading : false})
-        this.refs.title.focus()
-        console.log('error with fetch title: ', error.message)
-      })
-  }
-
-  componentDidMount() {
-    const {url} = this.props
-
-    this.fetchTitle(url)
+  componentWillMount() {
+    const {dispatch, modal} = this.props
+    const {validPost} = modal
+    dispatch(fetchTitle(validPost.url))
 
     document.addEventListener('keyup', this.handleKeyUp);
     document.body.classList.add('modal-open')
@@ -61,39 +31,69 @@ class Modal extends Component {
     document.body.classList.remove('modal-open')
   }
 
+  componentWillReceiveProps(nextProps) {
+    const title = nextProps.modal.fetchedTitle
+    const isLoadingTitle = nextProps.modal.isLoadingTitle
+    console.log('new props, title is ', title, isLoadingTitle)
+    if (this.props.modal.isLoadingTitle && !isLoadingTitle) {
+      if (title && title!=="") { this.refs.title.value = title }
+      this.refs.title.focus()
+    }
+    
+  }
+
   handleKeyUp(e) {
+    const {dispatch} = this.props
     switch(e.which) {
-      case 13:
-        // enter
+      case 13: // enter
         this.submit()
-      case 27:
-        // esc
-        this.props.closeModal()
+        return null
+      case 27: // esc
+        dispatch(resetModal())
+        return null
       default:
         return null
     }
   }
 
   submit() {
-    const {dispatch, binSlug, currentUser, closeModal, title, url, mediaType} = this.props
-    
+    const {dispatch, auth, params, modal} = this.props
+    const {validPost} = modal
+    const {url, mediaType} = validPost
+    const {binId} = params
+
     const post = {
-      binSlug,
+      binId,
       url,
       mediaType,
       title: this.refs.title.value.trim(),
-      author: currentUser.id
     }
-    dispatch(submitNewPost(post))
-    closeModal()
+    dispatch(createPost(post))
+  }
+
+  renderSubmit() {
+    const { posts } = this.props
+    if (posts.isCreating) {
+      return (
+        <div className="modal-submit-wrapper">
+          <Loading className="modal-submit-loading" size="25" />
+        </div>
+      )
+    } else {
+      return (
+        <div className="modal-submit-wrapper">
+          <div className="modal-submit" onClick={this.submit}>Press ⏎ to submit</div>
+        </div>
+      )  
+    }
   }
 
   render() {
-
-    const {url, timestamp, mediaType, closeModal} = this.props
-
+    const {dispatch, modal} = this.props
+    const {validPost} = modal
+    const {url, mediaType} = validPost
     return (
-      <div className="modal-backdrop" onClick={closeModal}>
+      <div className="modal-backdrop" onClick={e=>dispatch(resetModal())}>
         <div className="modal-content" onClick={e=>e.stopPropagation()}>
           <div className="modal-top">
             <div className="modal-top-left">
@@ -102,24 +102,30 @@ class Modal extends Component {
               <span className="modal-url">{url}</span>
             </div>
             <div className="modal-top-right">
-              <div className="modal-close" onClick={closeModal}>Esc to close</div>
+              <div className="modal-close" onClick={e=>dispatch(resetModal())}>Esc to close</div>
             </div>
           </div>
 
           <div className="modal-title-input-wrapper">
             <input className="modal-title-input" type="text" ref="title" />
-            { this.state.titleIsLoading ? <Loading className="modal-title-input-loading" size="35" /> : null}
+            { modal.isLoadingTitle ? <Loading className="modal-title-input-loading" size="35" /> : null}
           </div>
         
           { mediaType ? <Media mediaType={mediaType} url={url}/> : null }
-
-          <div className="modal-submit" onClick={this.submit}>Press ⏎ to submit</div>
+          {this.renderSubmit()}
         </div>
-
-
       </div>
     )
   }
 } 
 
-export default connect(modalSelector)(Modal);
+function mapStateToProps(state) {
+  const {auth, posts, modal} = state
+  return {
+    auth,
+    posts,
+    modal
+  }
+}
+
+export default connect(mapStateToProps)(Modal)

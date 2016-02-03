@@ -6,32 +6,6 @@ import {createLookupObj} from './helpers/utils'
 function posts(state={}, action) {
   switch(action.type) {
 
-    case types.RECEIVE_POSTS:
-      if (!state[action.params.slug]) {
-        // if no posts from bin
-        // console.log('no posts in bin, posts are ', action.posts, state)
-        return Object.assign({}, state, {
-          [action.params.slug]: action.posts
-        })
-      } else {
-        // if already exists, push to end of array
-        // console.log('posts in bin already exist, pushing...')
-        return update(state, {
-          [action.params.slug]: {$push: action.posts}
-        })
-      }
-
-    case types.RECEIVE_NEW_POST:
-      
-      return update(state, {
-        [action.data.binSlug]: {$unshift: [action.data]}
-      })
-
-    case types.REQUEST_DELETE_POST:
-      return update(state, {
-        [action.binSlug]: {$splice: [[action.index, 1]]}
-      })
-    
     case types.REQUEST_TOGGLE_REACTION:
       return state
       // const reactions = state[action.postId]['reactions']
@@ -94,54 +68,5 @@ function posts(state={}, action) {
     default:
       return state
   }
-}
-
-function currentUser(state={}, action) {
-  switch(action.type) {
-    case types.UPDATE_LOCATION:
-      return state
-
-    default:
-      return state
-  }
-}
-
-function view(state={}, action) {
-  switch(action.type) {
-    case types.DISPLAY_ERROR:
-      return Object.assign({}, state, {error: action.message})
-    case types.REQUEST_POSTS:
-      return Object.assign({}, state, {isLoading: true})
-    case types.RECEIVE_POSTS:
-      return Object.assign({}, state, {isLoading: false})
-
-    case types.CHANGE_IS_MOBILE:
-      return Object.assign({}, state, {
-        isMobile: action.isMobile
-      });
-    case types.CHANGE_WIDTH_AND_HEIGHT:
-      return Object.assign({}, state, {
-        height: action.height,
-        width: action.width
-      });
-    default:
-      return state
-  }
-}
-
-function bins(state={}, action) {
-  switch(action.type) {
-    case types.RECEIVE_BINS:
-      return Object.assign({}, action.bins)
-    default:
-      return state
-  }
-}
-
-export default {
-  posts,
-  currentUser,
-  view,
-  bins
 }
 

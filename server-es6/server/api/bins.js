@@ -9,7 +9,7 @@ var User = require('./../models/users')
 export function createBin(req, res) {
 
   const binId = req.params.binId
-  const userId = req.query.userId
+  const userId = req.token.id
 
   Bin.get(binId).getJoin({users: true}).run().then(function(bin){
     res.json({err: 'Bin already exists'})
@@ -35,7 +35,7 @@ export function createBin(req, res) {
 
 // joinBin
 // POST /api/bins/:id/join
-// query params {token, userId}
+// query params {token}
 // body {invite_code}
 // => {ok: true}
 export function joinBin(req, res) {
@@ -68,7 +68,8 @@ export function joinBin(req, res) {
 // => {bins}
 export function fetchUserBins(req, res) {
   const userId = req.token.id 
-  User.get(userId).getJoin({bins: true}).run().then(function(user){
+
+  User.get(userId).getJoin({bins: {users: {avatarUrl: true, id: true, name: true}}}).run().then(function(user){
     res.json(user.bins)
   })
 }

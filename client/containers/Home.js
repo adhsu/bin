@@ -13,14 +13,13 @@ class Home extends React.Component {
     
     return (
       <p>
-        Welcome to Bin, {auth.user.username}.
+        Welcome to Bin, {auth.user.name}.
       </p>
     )
   }
 
   render() {
     const {auth} = this.props
-    console.log(auth)
     return (
       <div className="home u-textCenter">
         {this.renderWelcome()}

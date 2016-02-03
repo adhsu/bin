@@ -38,7 +38,6 @@ class Bin extends React.Component {
     const {dispatch} = this.props
     // update local state with new view error from redux
     this.setState({error:nextProps.environment.error})
-    console.log('bin receives new props ', this.props, nextProps)
 
     const numNewPosts = nextProps.posts.length - this.props.posts.length
     if (numNewPosts<5 && numNewPosts>0) {
@@ -59,11 +58,7 @@ class Bin extends React.Component {
     const isMemberOfBin = findById(auth.user.bins, binId)
     if (!isMemberOfBin) {
       return (
-        <BinPasswordInput 
-          dispatch={dispatch} 
-          auth={auth} 
-          params={params}
-          routing={routing} />
+        <BinPasswordInput {...this.props} />
       )
     }
     return (
@@ -98,8 +93,8 @@ class Bin extends React.Component {
 }
 
 function mapStateToProps(state) {
-  const {auth, environment, posts, routing} = state
-  return {auth, environment, posts, routing}
+  const {auth, environment, modal, posts, routing} = state
+  return {auth, environment, modal, posts, routing}
 }
 
 export default connect(mapStateToProps)(Bin)

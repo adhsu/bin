@@ -19,8 +19,8 @@ class Post extends Component {
 
   delete(e) {
     const {dispatch, post} = this.props
-    const {binId, id} = post
-    dispatch(deletePost(binId, id))
+    const {id, binId} = post
+    dispatch(deletePost(id, binId))
   }
 
   toggleReaction(emojiId) {
@@ -37,16 +37,23 @@ class Post extends Component {
     }
   }
 
+  renderDelete() {
+    const {auth, post} = this.props
+    console.log('postid', auth.user.id, post.author)
+    // if (auth.user.id == post.author) { return; }
+    return (
+      <div className="post-close" onClick={e=>this.delete(e)}>
+        <img src={closeImg} />
+      </div>
+    )
+  }
   render() {
     const {dispatch, auth, post} = this.props
     const {id, binId, title, url, mediaType, createdAt, reactions} = post
 
     return (
       <div className='post post-style1'>
-        
-        <div className="post-close" onClick={e=>this.delete(e)}>
-          <img src={closeImg} />
-        </div>
+        {this.renderDelete()}
         
         { title ? <div className="post-title-wrapper"><a href={this.processUrl(url)} className="post-title" target="_blank">{title}</a></div> : null }
         { mediaType ? <Media mediaType={mediaType} url={url}/> : null }

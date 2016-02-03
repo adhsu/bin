@@ -38,30 +38,46 @@ class Nav extends Component {
     this.setState({menuIsOpen: !this.state.menuIsOpen})
   }
 
+  renderBinsList(myBins) {
+    const {dispatch, auth} = this.props
+
+    if (myBins.length == 0) { 
+      return (
+        <div>No bins.</div>
+      )
+    }
+
+    return (
+      <div>
+        My bins: 
+        {' '}
+        {myBins.map(bin => {
+          return (
+            <span key={bin.id}>
+              <a href="javascript:;"
+                className="nav-bin-link" 
+                onClick={()=>dispatch(routeActions.push('/'+bin.id))}>
+                [{bin.id}]
+              </a>{' '}
+            </span>
+          )
+        })}
+      </div>
+    )
+  }
+
   renderNavUser() {
     const {dispatch, auth} = this.props
     if (auth.user) {
-      const myBins = auth.user.bins
+      const myBins = auth.user.bins || []
       return (
         <div className="nav-right-inner">
           <ul className="nav-right-ul">
             <li>
-              My bins: 
-              {' '}
-              {myBins.map(bin => {
-                return (
-                  <span key={bin.id}>
-                    <a href="javascript:;"
-                      className="nav-bin-link" 
-                      onClick={()=>dispatch(routeActions.push('/'+bin.id))}>
-                      [{bin.id}]
-                    </a>{' '}
-                  </span>
-                )
-              })}
+              {this.renderBinsList(myBins)}
             </li>
             <li>
-              {auth.user.username}
+              Logged in as @{auth.user.id}
             </li>
             <li>
               <a href='#' onClick={this.logout}>Log Out</a>
@@ -82,14 +98,19 @@ class Nav extends Component {
   renderBinName() {
     const {dispatch, auth, params} = this.props
     const {binId} = params
-
+    
     if (!binId) {
       return;
     }
+
     if (!auth.user) {
       return <span>/{binId}</span>
     }
-    const users = findById(auth.user.bins, binId).users
+    const thisBin = findById(auth.user.bins, binId)
+    if (auth.user.bins.length==0 || !thisBin) {
+      return <span>/{binId}</span>
+    }
+    const users = thisBin.users
     return (
       <Popover className='nav-users'>
         <div className="nav-users-link">
@@ -100,8 +121,8 @@ class Nav extends Component {
             {
               users.map(user => {
                 return (
-                  <li key={user} className="nav-users-item">
-                    {user}
+                  <li key={user.id} className="nav-users-item">
+                    @{user.id}
                   </li>
                 )
               })

@@ -13,7 +13,7 @@ export function fetchAuthedUser(req, res) {
   
   const userId = req.token.id
   
-  User.get(userId).run().then(function(user){
+  User.get(userId).getJoin({bins: {users: {avatarUrl: true, id: true, name: true}}}).run().then(function(user){
     res.json(user)
   })
 

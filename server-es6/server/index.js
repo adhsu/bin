@@ -145,7 +145,7 @@ app.get('/', function (req, res) {
   res.send(req.user);
 });
 
-app.post("/title",grabTitle)
+app.post("/title", grabTitle)
 
 app.get('/user', 
 	isAuthorized,

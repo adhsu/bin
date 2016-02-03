@@ -1,8 +1,9 @@
 import auth from './auth'
+import environment from './environment'
+import modal from './modal'
 import posts from './posts'
 import reactions from './reactions'
-import environment from './environment'
 
 export default {
-  auth, posts, reactions, environment
+  auth, environment, modal, posts, reactions
 }

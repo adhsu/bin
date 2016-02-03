@@ -4,39 +4,37 @@ import Post from './Post'
 import NoPosts from './NoPosts'
 import Loading from '../components/Loading'
 import {_throttle, findById} from '../helpers/utils'
-import {handlePaste} from '../helpers/pasteHelpers'
 import {fetchPostsIfNeeded} from '../actions/posts'
+import {handlePaste} from '../actions/paste'
 import {updateUser} from '../actions/auth'
 
 class Posts extends Component {
   constructor(props) {
     super(props)
-    const {dispatch, environment} = this.props
+    
     this.state = {
-      modalIsOpen: false,
       page: 0,
       hasMore: true
     }
-    this.closeModal = this.closeModal.bind(this);
-    this.boundHandlePaste = handlePaste.bind(this, dispatch)
+    
     this.scrollHandler = this.scrollHandler.bind(this)
+    this.pasteHandler = this.pasteHandler.bind(this)
   }
 
   componentWillMount() {
     const {dispatch, posts, params} = this.props
     dispatch(updateUser({lastViewedBin: params.binId}))
-    if (!(params.binId in posts.items) || posts.items[params.binId].length == 0) {
-      console.log('lets fetch if needed')
-      dispatch(fetchPostsIfNeeded(params.binId))
-    }
+    // if (!(params.binId in posts.items) || posts.items[params.binId].length == 0) {
+    //   console.log('lets fetch if needed')
+    //   dispatch(fetchPostsIfNeeded(params.binId))
+    // }
 
-    document.addEventListener('paste', this.boundHandlePaste);
-    document.addEventListener('scroll', this.scrollHandler);
+    document.addEventListener('paste', this.pasteHandler);
+    // document.addEventListener('scroll', this.scrollHandler);
     
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('Posts receiving new props')
     const {dispatch, posts, params} = this.props
     const newBinId = nextProps.params.binId
     if (params.binId !== newBinId) {
@@ -49,8 +47,14 @@ class Posts extends Component {
   }
 
   componentWillUnmount() {
-    document.removeEventListener('paste', this.boundHandlePaste);
+    document.removeEventListener('paste', this.pasteHandler);
     document.removeEventListener('scroll', this.scrollHandler);
+  }
+
+  pasteHandler(event) {
+    console.log('pasted is ', event.clipboardData.getData('text'))
+    const {dispatch} = this.props
+    dispatch(handlePaste(event))
   }
 
   scrollHandler() {
@@ -104,32 +108,14 @@ class Posts extends Component {
     )
   }
 
-  closeModal() {
-    this.setState({modalIsOpen: false, validPost: null})
-  }
-
-  renderModal() {
-    const {auth, params} = this.props
-    if (!auth.user) { 
-      return; 
-    }
-    return (
-      <div>
-        {this.state.modalIsOpen ? <Modal params={params} closeModal={this.closeModal} {...this.state.validPost}/> : null}
-      </div>
-    )
-  }
-
-  
-
   render() {
-    const {dispatch, auth, posts, params} = this.props
+    const {dispatch, auth, posts, params, modal} = this.props
     const {binId} = params
     return (
       <div>
         {this.renderPosts()}
         { posts.isFetching ? <Loading className="centered" /> : null }
-        {this.renderModal()}
+        { modal.isOpen ? <Modal params={params} /> : null }
       </div>
     )
   }

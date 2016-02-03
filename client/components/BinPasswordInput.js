@@ -16,8 +16,8 @@ export default class BinPasswordInput extends Component {
   joinBin(e) {
     e.preventDefault()
     const {dispatch, auth, params} = this.props
-    const password = this.refs.binPwInput.value
-    dispatch(joinBin(params.binId, password))
+    const invite_code = this.refs.binPwInput.value
+    dispatch(joinBin(params.binId, invite_code))
   }
 
   render() {

@@ -4,35 +4,23 @@ var Bin = require('./../models/bins')
 var Post = require('./../models/posts')
 var User = require('./../models/users')
 
-
 // createPost
 // POST /api/posts
-// query params {userId, auth_token}
-// body {binId, url, title, mediaType, authorId}
+// query params {auth_token}
+// body {binId, url, title, mediaType}
 // => {post}
 export function createPost(req, res) {
-
   //security assumption: bin exists and user is in that bin
-
   const binId = req.body.binId
   const postBody = req.body
-  const userId = req.token.id
-
-  if (userId != req.body.authorId) {
-    return res.json({"err": "Body's author not that authenticated author"})
-  }
-  
+  postBody.authorId = req.token.id
   postBody.reactions = []
 
   const post = new Post(postBody)
-
   post.save().then(function(result){
-    res.json({result})
+    res.json(result)
   })
-
-
 }
-
 
 // deletePost
 // DELETE /api/posts/:id
@@ -44,17 +32,17 @@ export function deletePost(req, res) {
   var postId = req.params.postId
 
   Post.get(postId).run().then(function(post){
-    if(post.authorId == currentUserId) {
+    if (post.authorId == currentUserId) {
       post.delete().then(function(result){
         return res.json({ok: true})
       })
     } else {
-      return res.json({ok: false})
+      return res.json({
+        ok: false, 
+        message: 'you are not the author of this post'
+      })
     }
-    
   })
-
-
 }
 
 // fetchPosts

@@ -45,6 +45,16 @@ export function createLookupObj (array, key='id') {
   return lookup
 }
 
+export function removeById (sourceArray, id) {
+  for (var i = 0; i < sourceArray.length; i++) {
+    if (sourceArray[i].id === id) {
+      sourceArray.splice(i, 1)
+      return sourceArray
+    }
+  }
+  return false
+}
+
 export function findById (sourceArray, id) {
   for (var i = 0; i < sourceArray.length; i++) {
     if (sourceArray[i].id === id) {
