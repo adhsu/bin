@@ -8,6 +8,8 @@ export function grabTitle(req, res){
     return res.send({ok: false})
   } 
 
+  // handle airbnb and imgur variations 
+
   var client = new MetaInspector(req.body.url, { timeout: 5000 });
 
   client.on("fetch", function(){
@@ -17,13 +19,14 @@ export function grabTitle(req, res){
         'title': client.title,
         'ogTitle': client.ogTitle,
         'host': client.host,
-        'image': client.image
+        'image': client.image,
+        'ogImage': client.ogImage
       }
     })
   })
 
   client.on("error", function(err){
-    return err
+    res.json({"ok" : "false"})
   })
 
   client.fetch()
