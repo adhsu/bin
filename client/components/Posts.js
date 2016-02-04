@@ -29,7 +29,6 @@ class Posts extends Component {
     const {dispatch, posts, params} = this.props
     const {binId} = params
     dispatch(updateUser({lastViewedBin: binId}))
-    console.log('check', binId, posts)
     if (!(binId in posts) && !posts[binId]) {
       console.log('lets fetch if needed')
       dispatch(fetchPostsIfNeeded(params.binId))
@@ -71,7 +70,6 @@ class Posts extends Component {
   handleKeyUp(e) {
     switch(e.which) {
       case 27: // esc
-        console.log('key up', e.which)
         this.setState({editingTitle: false})
         return null
       default:
@@ -80,7 +78,6 @@ class Posts extends Component {
   }
 
   pasteHandler(event) {
-    console.log('pasted is ', event.clipboardData.getData('text'))
     const {dispatch} = this.props
     dispatch(handlePaste(event))
   }
@@ -89,10 +86,9 @@ class Posts extends Component {
     const {dispatch, auth, posts, params} = this.props
     const {binId} = params
     const bottom = scrolledToBottom(10)
-    if(bottom) { console.log('scrollbottom', bottom) }
     
     if (bottom && !posts[binId].isFetching && posts[binId].hasMore) { 
-      console.log('**inf scroll**')
+      console.log('Called inf scroll')
       dispatch(fetchPosts(
         auth.token, 
         params.binId,
@@ -107,7 +103,6 @@ class Posts extends Component {
     const {dispatch, auth, posts, params, reactions} = this.props
     const {binId} = params
     const postsInBin = binId in posts ? posts[binId].items : []
-    console.log('ppp', posts, binId, postsInBin)
     
     if (postsInBin.length==0 && posts[binId]) {
       if (!posts[binId].isFetching) {

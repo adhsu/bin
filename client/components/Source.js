@@ -20,7 +20,7 @@ const Source = (props) => {
   }
 
   return (
-    <a className="post-source" href={props.url}>{extractDomain(props.url)}</a>
+    <a className="post-source" target="_blank" href={props.url}>{extractDomain(props.url)}</a>
   )
 }
 

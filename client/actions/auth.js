@@ -12,7 +12,6 @@ const COOKIE_PATH = 'binAccessToken'
 export function initAuth() {
   return dispatch => {
     let token = Cookies.get(COOKIE_PATH)
-    console.log('initAuth with token', token)
     if (token) {
       dispatch(fetchAuthedUser(token))
     } else {

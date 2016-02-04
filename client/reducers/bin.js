@@ -4,6 +4,7 @@ import update from 'react-addons-update'
 const initialState = {
   checked: false,
   exists: false,
+  firstTimeInBin: false,
   error: ""
 }
 
@@ -20,6 +21,7 @@ export default function bin(state=initialState, action) {
       return Object.assign({}, state, {
         checked: true,
         exists: true,
+        firstTimeInBin: true,
         error: ""
       })
     

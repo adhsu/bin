@@ -55,7 +55,6 @@ function postsInABin(state=initialState, action) {
       })
 
     case types.RECEIVE_POSTS:
-      console.log('receive_posts', action.posts.length, POSTS_PER_PAGE, !(action.posts.length<POSTS_PER_PAGE))
       return update(state, {
         page: {$apply: x=>x+1},
         isFetching: {$set: false},

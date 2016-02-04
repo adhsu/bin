@@ -1,7 +1,17 @@
-import {r, type, Errors} from'./../utils/thinky.js'
+import {r, type, Errors} from './../utils/thinky.js'
+import {nouns, adjectives} from '../utils/words'
 var Bin = require('./../models/bins')
 var Post = require('./../models/posts')
 var User = require('./../models/users')
+
+
+function generateInviteCode() {
+  const adj = adjectives[Math.floor(Math.random()*adjectives.length)]
+  const noun = nouns[Math.floor(Math.random()*nouns.length)]
+  const invite_code = `${adj}-${noun}`
+  console.log('generating invite code', invite_code)
+  return invite_code
+}
 
 // createBin
 // POST /api/bins/:id
@@ -17,8 +27,8 @@ export function createBin(req, res) {
     
     let bin = new Bin({
       id: binId,
-      title: 'Change the title fool!',
-      invite_code: 'random'
+      title: 'Click here to set the title...',
+      invite_code: generateInviteCode()
     })
 
     User.get(userId).run().then(function(user){
@@ -59,7 +69,7 @@ export function joinBin(req, res) {
     } else {
       res.send({
         ok: false,
-        message: 'Sorry, your invite code is wrong. Try again!'
+        message: `Ah ah ah, you didn't say the magic word!`
       })
     }
     

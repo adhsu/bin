@@ -1,4 +1,5 @@
 import React, {Component, PropTypes } from 'react'
+import ReactDOM from 'react-dom'
 import {connect} from 'react-redux'
 import {Link} from 'react-router'
 import {routeActions} from 'react-router-redux'
@@ -7,6 +8,7 @@ import {loginUser, logoutUser} from '../actions/auth'
 import NavLogoMenu from '../components/NavLogoMenu'
 import {_throttle, findById} from '../helpers/utils'
 import {popupTwitterLogin} from '../helpers/login'
+const lockImg = require('../static/images/locked.svg')
 
 class Nav extends Component {
   constructor(props) {
@@ -50,18 +52,20 @@ class Nav extends Component {
     return (
       <div>
         My bins: 
-        {' '}
+        {' [ '}
         {myBins.map(bin => {
           return (
             <span key={bin.id}>
               <a href="javascript:;"
                 className="nav-bin-link" 
                 onClick={()=>dispatch(routeActions.push('/'+bin.id))}>
-                [{bin.id}]
-              </a>{' '}
+                {bin.id}
+              </a>
+              {' '}/{' '}
             </span>
           )
         })}
+        {' ] '}
       </div>
     )
   }
@@ -77,7 +81,8 @@ class Nav extends Component {
               {this.renderBinsList(myBins)}
             </li>
             <li>
-              Logged in as @{auth.user.id}
+              <span className="nav-user-id">@{auth.user.id}</span>
+              <img className="nav-user-avatar" src={auth.user.avatarUrl}/>
             </li>
             <li>
               <a href='#' onClick={this.logout}>Log Out</a>
@@ -96,7 +101,7 @@ class Nav extends Component {
   }
 
   renderBinName() {
-    const {dispatch, auth, params} = this.props
+    const {dispatch, auth, bin, params} = this.props
     const {binId} = params
     
     if (!binId) {
@@ -111,26 +116,42 @@ class Nav extends Component {
       return <span>/{binId}</span>
     }
     const users = thisBin.users
+    const inviteLink = `${window.location.host}/${binId}?invite_code=${thisBin.invite_code}`
     return (
-      <Popover className='nav-users'>
-        <div className="nav-users-link">
-          /{binId}
-        </div>
-        <div className="nav-users-popover popover-content">
-          <ul className="nav-users-list">
-            {
-              users.map(user => {
-                return (
-                  <li key={user.id} className="nav-users-item">
-                    @{user.id}
-                  </li>
-                )
-              })
-            }
-          </ul>
-        </div>
+      <span>
+        <Popover className='nav-users'>
+          <div className="nav-users-link">
+            /{binId}
+          </div>
+          <div className="nav-users-popover popover-content">
+            <ul className="nav-users-list">
+              {
+                users.map(user => {
+                  return (
+                    <li key={user.id} className="nav-users-item">
+                      @{user.id}
+                    </li>
+                  )
+                })
+              }
+            </ul>
+          </div>
 
-      </Popover>
+        </Popover>
+        
+        <Popover className='bin-invite' initiallyOpen={bin.firstTimeInBin}> 
+          <span className="bin-invite-link">
+            <img src={lockImg} />
+          </span>
+          <div className="bin-invite-popover popover-content">
+            <p>Invite a friend with this link:</p>
+            <p className="bin-invite-url">{inviteLink}</p>
+          </div>
+        </Popover>
+
+
+
+      </span>
     )
   }
 
@@ -158,8 +179,8 @@ class Nav extends Component {
 }
 
 function mapStateToProps(state) {
-  const {auth, environment} = state
-  return {auth, environment}
+  const {auth, bin, environment} = state
+  return {auth, bin, environment}
 }
 
 export default connect(mapStateToProps)(Nav)

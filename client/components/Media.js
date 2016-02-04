@@ -2,6 +2,17 @@ import React, {Component} from 'react'
 
 class Media extends Component {
   
+  renderVideo(url) {
+    return (
+      <div className="media-frame">
+        <video className="media-video" preload="auto" autoPlay="autoplay" muted="muted" loop="loop" webkit-playsinline="">
+          <source src={url} type="video/webm"></source>
+          
+        </video>        
+      </div>
+
+    )
+  }
   renderYoutube(url) {
     return (
       <div className="media-frame">
@@ -23,6 +34,8 @@ class Media extends Component {
     const {mediaType, url} = this.props
     
     switch(mediaType) {
+      case 'video':
+        return this.renderVideo(url)
       case 'youtube':
         return this.renderYoutube(url)
       case 'image':

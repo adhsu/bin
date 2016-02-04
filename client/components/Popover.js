@@ -8,11 +8,11 @@ export default class Popover extends Component {
       throw new Error('Popover component requires exactly 2 children');
     }
 
-      this.handleOutsideClick = this.handleOutsideClick.bind(this);
-      this.onOutsideClick = this.onOutsideClick.bind(this);
-      this.toggleIsOpen = this.toggleIsOpen.bind(this);
+    this.handleOutsideClick = this.handleOutsideClick.bind(this);
+    this.onOutsideClick = this.onOutsideClick.bind(this);
+    this.toggleIsOpen = this.toggleIsOpen.bind(this);
 
-      this.state = {isOpen: false};
+    this.state = {isOpen: this.props.initiallyOpen || false};
   }
 
   componentDidMount() {
