@@ -26,8 +26,15 @@ class Posts extends Component {
   }
 
   componentWillMount() {
-    const {dispatch, posts, params} = this.props
+    const {dispatch, posts, params, routing} = this.props
     const {binId} = params
+
+    // support ?add=url direct adding
+    const queryPaste = routing.location.query.add
+    if (queryPaste) {
+      dispatch(handlePaste(null, queryPaste))
+    }
+
     dispatch(updateUser({lastViewedBin: binId}))
     if (!(binId in posts) && !posts[binId]) {
       console.log('lets fetch if needed')

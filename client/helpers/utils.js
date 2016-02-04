@@ -1,3 +1,39 @@
+export function addProtocol (url) {
+  if (!/^(?:f|ht)tps?\:\/\//.test(url)) {
+    url = "http://" + url;
+  }
+  return url;
+}
+
+export function getImgurId(url) {
+  const lastSlash = url.lastIndexOf('/')
+  const lastDot = url.lastIndexOf('.')
+  if (lastSlash<lastDot) {
+    url = url.slice(lastSlash+1, lastDot)
+  } else {
+    url = url.slice(lastSlash+1)
+  }
+  return url
+}
+
+function getYoutubeId(url) {
+  var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  var match = url.match(regExp);
+  if (match && match[2].length == 11) {
+      return match[2];
+  } else {
+      return 'error';
+  }
+}
+
+export function fixYoutubeUrl (url) {
+  if ((url.indexOf('youtube')>-1 || url.indexOf('youtu.be')>-1) && url.indexOf('embed')==-1) {
+    return `http://youtube.com/embed/${getYoutubeId(url)}`
+  }
+  return url
+}
+
+
 export function scrolledToBottom(offset=0) {
   const scrollTop = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop
   const scrollHeight = (document.documentElement && document.documentElement.scrollHeight) || document.body.scrollHeight

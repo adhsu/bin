@@ -1,6 +1,12 @@
 import 'whatwg-fetch'
 import * as types from '../constants/ActionTypes';
-import {API_BASE_URL, API_DELAY} from '../constants/Config'
+import {API_BASE_URL, 
+  API_DELAY, 
+  IMGUR_IMAGE_API, 
+  IMGUR_ALBUM_API, 
+  IMGUR_HEADER} from '../constants/Config'
+import {getImgurId} from '../helpers/utils'
+
 
 export function changeModal (modal) {
   return {
@@ -9,16 +15,18 @@ export function changeModal (modal) {
   }
 }
 
-function requestTitle() {
+function requestMeta() {
   return {
-    type: types.REQUEST_TITLE
+    type: types.REQUEST_META
   }
 }
 
-function receiveTitle(title) {
+function receiveMeta(url, meta, api="self") {
   return {
-    type: types.RECEIVE_TITLE,
-    title
+    type: types.RECEIVE_META,
+    url,
+    meta,
+    api
   }
 }
 
@@ -28,8 +36,9 @@ export function resetModal() {
   }
 }
 
-export function fetchTitle (url) {
+export function fetchMeta (url) {
   return dispatch => {
+    
     const apiUrl = `${API_BASE_URL}/title`
     const options = {
       method: 'POST',
@@ -37,22 +46,43 @@ export function fetchTitle (url) {
       body: JSON.stringify({url})
     }
 
-    dispatch(requestTitle())
+    dispatch(requestMeta())
+
+    if (url.indexOf('imgur')>-1) {
+      const isAlbum = url.indexOf('/a/')>-1
+      const imgurId = getImgurId(url)
+      return fetch(
+        (isAlbum ? IMGUR_ALBUM_API : IMGUR_IMAGE_API)+imgurId, {
+          headers: { 'Authorization': IMGUR_HEADER }
+        })
+        .then(response => response.json())
+        .then(json => {
+          console.log('fetchMeta from imgur', json)
+          if (json.success) {
+            dispatch(receiveMeta(url, json.data, "imgur"))
+          } else {
+            dispatch(receiveMeta(url, {}, "imgur"))
+          }
+        })
+        .catch(error => {
+          dispatch(receiveMeta({}))
+          console.log('error with fetch meta: ', error.message)
+        })
+    }
+
     return fetch(apiUrl, options)
       .then(response => response.json())
       .then(json => {
-        console.log('fetchTitle json ', json)
+        console.log('fetchMeta', url, json)
         if (json.ok) {
-          dispatch(receiveTitle(json.data.ogTitle || json.data.title))
+          dispatch(receiveMeta(url, json.data))
         } else {
-          dispatch(receiveTitle(""))
+          dispatch(receiveMeta(url, {}))
         }
-        // this.refs.title.focus()
       })
       .catch(error => {
-        dispatch(receiveTitle(""))
-        // this.refs.title.focus()
-        console.log('error with fetch title: ', error.message)
+        dispatch(receiveMeta({}))
+        console.log('error with fetch meta: ', error.message)
       })
   }
 }

@@ -1,8 +1,11 @@
 import React, {Component} from 'react'
+import {addProtocol, getImgurId, fixYoutubeUrl} from '../helpers/utils'
+
 
 class Media extends Component {
   
   renderVideo(url) {
+    
     return (
       <div className="media-frame">
         <video className="media-video" preload="auto" autoPlay="autoplay" muted="muted" loop="loop" webkit-playsinline="">
@@ -14,9 +17,17 @@ class Media extends Component {
     )
   }
   renderYoutube(url) {
+    url = addProtocol(url)
+    url = fixYoutubeUrl(url)
     return (
       <div className="media-frame">
-        <iframe className="media-youtube" width="700" height="380" src={url}></iframe>
+        <iframe className="media-youtube" 
+          width="700"
+          height="400"
+          allowFullScreen
+          frameBorder="0"
+          src={`${url}?modestbranding=1&autohide=1&showinfo=0`}>
+        </iframe>
       </div>
     )
   }
@@ -30,9 +41,7 @@ class Media extends Component {
   }
 
   render() {
-    
     const {mediaType, url} = this.props
-    
     switch(mediaType) {
       case 'video':
         return this.renderVideo(url)
@@ -47,10 +56,5 @@ class Media extends Component {
 
   }
 } 
-
-Media.propTypes = {
-  mediaType: React.PropTypes.string.isRequired,
-  url: React.PropTypes.string.isRequired
-}
 
 export default Media

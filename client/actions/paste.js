@@ -1,67 +1,42 @@
 import {displayError} from '../actions/environment'
 import {changeModal} from '../actions/modal'
 
-
-function addProtocol (url) {
-  if (!/^(?:f|ht)tps?\:\/\//.test(url)) {
-    url = "//" + url;
-  }
-  return url;
-}
-
-function fixExtension (url) {
-  // change imgur gifv to webm for embed
-  if (url.indexOf('imgur')>-1 && url.endsWith('gifv')) {
-    return url.slice(0, url.lastIndexOf('gifv'))+'webm'
-  }
-  // change youtube video link to embed
-  if (url.indexOf('youtube')>-1 && url.indexOf('embed')==-1) {
-    // https://www.youtube.com/watch?v=fb1eeM4tan4
-  }
-  return url
-}
-
 function getMediaType (data) {
   if (data.indexOf('youtube')!==-1) {
     return 'youtube'
-  } else if (data.indexOf('gifv')!==-1 || data.indexOf('webm')!==-1) {
+  } else if (data.endsWith('gifv')!==-1 || data.endsWith('webm')!==-1) {
     return 'video'
-  } else if (data.indexOf('jpg')!==-1 || data.indexOf('png')!==-1 || data.indexOf('jpeg')!==-1) {
+  } else if (data.endsWith('jpg')!==-1 || data.endsWith('png')!==-1 || data.endsWith('jpeg')!==-1) {
     return 'image'
-  } else if (data.indexOf('gif')!==-1) {
+  } else if (data.endsWith('gif')!==-1) {
     return 'gif'
   } else {
     return null
   }
 }
 
-function validatePaste(data) {
+function validateUrl(data) {
   const isUrl = data.indexOf(" ")==-1 && data.split('.').length >=2
-  data = addProtocol(data)
-  data = fixExtension(data)
   if (isUrl) {
-    const validPost = {
-      url: data,
-      mediaType: getMediaType(data)
-    }
-    return validPost
-
+    return data
   } else {
-    console.log('not a valid paste')
+    console.log('Not a valid url')
     return false;
   }
 }
 
-export function handlePaste(event) {
+export function handlePaste(event=null, queryPaste=null) {
   return dispatch => {
-    const clipboardData = event.clipboardData.getData('text')
-    const validPost = validatePaste(clipboardData)
+    let url
+    if (!queryPaste) {
+      const clipboardData = event.clipboardData.getData('text')
+      url = validateUrl(clipboardData)
+    } else if (queryPaste && queryPaste!=="") {
+      url = validateUrl(queryPaste)
+    }
     
-    if (validPost) {
-      dispatch(changeModal({
-        isOpen: true,
-        validPost
-      }))
+    if (url) {
+      dispatch(changeModal({isOpen: true, url}))
       return null
     } else {
       console.log('Sorry, you did not paste a URL.')

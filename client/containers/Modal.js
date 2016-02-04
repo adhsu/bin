@@ -6,7 +6,7 @@ import Media from '../components/Media'
 import Loading from '../components/Loading'
 
 import {createPost} from '../actions/posts'
-import {fetchTitle, resetModal} from '../actions/modal'
+import {fetchMeta, resetModal} from '../actions/modal'
 import {API_BASE_URL} from '../constants/Config'
 
 class Modal extends Component {
@@ -19,8 +19,7 @@ class Modal extends Component {
 
   componentWillMount() {
     const {dispatch, modal} = this.props
-    const {validPost} = modal
-    dispatch(fetchTitle(validPost.url))
+    dispatch(fetchMeta(modal.url))
 
     document.addEventListener('keyup', this.handleKeyUp);
     document.body.classList.add('modal-open')
@@ -32,13 +31,13 @@ class Modal extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const title = nextProps.modal.fetchedTitle
-    const isLoadingTitle = nextProps.modal.isLoadingTitle
-    if (this.props.modal.isLoadingTitle && !isLoadingTitle) {
+    
+    const nextModal = nextProps.modal
+    if (this.props.modal.isLoadingMeta && !nextModal.isLoadingMeta && nextModal.meta) {
+      const title = nextModal.meta.ogTitle || nextModal.meta.title
       if (title && title!=="") { this.refs.title.value = title }
       this.refs.title.focus()
     }
-    
   }
 
   handleKeyUp(e) {
@@ -57,8 +56,7 @@ class Modal extends Component {
 
   submit() {
     const {dispatch, auth, params, modal} = this.props
-    const {validPost} = modal
-    const {url, mediaType} = validPost
+    const {url, mediaType} = modal
     const {binId} = params
 
     const post = {
@@ -72,7 +70,7 @@ class Modal extends Component {
 
   renderSubmit() {
     const { posts, params } = this.props
-    const {binId} = params
+    const { binId } = params
     if (posts[binId].isCreating) {
       return (
         <div className="modal-submit-wrapper">
@@ -90,8 +88,7 @@ class Modal extends Component {
 
   render() {
     const {dispatch, modal} = this.props
-    const {validPost} = modal
-    const {url, mediaType} = validPost
+    const {url, mediaType} = modal
     return (
       <div className="modal-backdrop" onClick={e=>dispatch(resetModal())}>
         <div className="modal-content" onClick={e=>e.stopPropagation()}>
@@ -106,9 +103,9 @@ class Modal extends Component {
             </div>
           </div>
 
-          <div className="modal-title-input-wrapper">
-            <input className="modal-title-input" type="text" ref="title" />
-            { modal.isLoadingTitle ? <Loading className="modal-title-input-loading" size="35" /> : null}
+          <div className="modal-meta-input-wrapper">
+            <input className="modal-meta-input" type="text" ref="title" />
+            { modal.isLoadingMeta ? <Loading className="modal-meta-input-loading" size="35" /> : null}
           </div>
         
           { mediaType ? <Media mediaType={mediaType} url={url}/> : null }
