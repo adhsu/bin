@@ -1,6 +1,6 @@
 import 'whatwg-fetch'
 import * as types from '../constants/ActionTypes'
-import {API_BASE_URL, API_DELAY} from '../constants/Config'
+import {API_BASE_URL, API_DELAY, POSTS_PER_PAGE} from '../constants/Config'
 import {checkStatus, delay, encodeQueryData} from '../helpers/utils'
 import {resetModal} from '../actions/modal'
 
@@ -39,10 +39,8 @@ function receivePosts(posts, binId) {
   }
 }
 
-
-
-export function fetchPosts(token, binId, lastViewed=Date.now(), offset=0, limit=3) {
-  console.log('actions/fetchPosts for bin ', binId)
+export function fetchPosts(token, binId, lastViewed=Date.now(), offset=0, limit=POSTS_PER_PAGE) {
+  console.log('fetching posts in', binId)
   return dispatch => {
     dispatch(requestPosts(binId))
 

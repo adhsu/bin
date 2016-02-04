@@ -64,6 +64,7 @@ class Modal extends Component {
       url,
       mediaType,
       title: this.refs.title.value.trim(),
+      meta: modal.meta
     }
     dispatch(createPost(post))
   }
@@ -108,7 +109,7 @@ class Modal extends Component {
             { modal.isLoadingMeta ? <Loading className="modal-meta-input-loading" size="35" /> : null}
           </div>
         
-          { mediaType ? <Media mediaType={mediaType} url={url}/> : null }
+          { mediaType ? <Media mediaType={mediaType} meta={modal.meta} url={url}/> : null }
           {this.renderSubmit()}
         </div>
       </div>
@@ -117,7 +118,7 @@ class Modal extends Component {
 } 
 
 function mapStateToProps(state) {
-  const {auth, posts, modal} = state
+  const {auth, posts, meta, modal} = state
   return {
     auth,
     posts,

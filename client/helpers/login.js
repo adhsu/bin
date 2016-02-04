@@ -1,10 +1,10 @@
-import {TWITTER_LOGIN_URL} from '../constants/Config'
+import {API_BASE_URL} from '../constants/Config'
 import {loginUser, logoutUser} from '../actions/auth'
 import {parseQueryString} from './utils'
 
 export function popupTwitterLogin (dispatch) {
   const options = `toolbar=no,scrollbars=yes,height=400,width=600,top=${screen.height/2-300},left=${screen.width/2-300}`    
-  const authPopup = window.open(TWITTER_LOGIN_URL, '_blank', options)
+  const authPopup = window.open(API_BASE_URL+'/auth/login/twitter', '_blank', options)
   window.authCallback = (data) => {
     authPopup.close()
     const qs = authPopup.location.search

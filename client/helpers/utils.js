@@ -1,8 +1,33 @@
+export function limitText(text, lim) {
+  if (!text) {return;}
+  if (lim < text.length) {
+    return text.substring(0, text.lastIndexOf(' ', lim))+'...'
+  } else {
+    return text
+  }
+}
+
 export function addProtocol (url) {
   if (!/^(?:f|ht)tps?\:\/\//.test(url)) {
     url = "http://" + url;
   }
   return url;
+}
+
+export function getSpotifyId(url) {
+  // spotify:track:2TpxZ7JUBn3uw46aR7qd6V or http://open.spotify.com/track/2TpxZ7JUBn3uw46aR7qd6V
+
+  if (url.indexOf('spotify')>-1) {
+    const lastColon = url.lastIndexOf(':')
+    const lastSlash = url.lastIndexOf('/')
+    if (lastSlash>lastColon) {
+      return url.slice(lastSlash+1)
+    } else {
+      return url.slice(lastColon+1)
+    }
+  } else {
+    return 'error'
+  }
 }
 
 export function getImgurId(url) {

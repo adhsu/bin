@@ -49,6 +49,25 @@ export default function auth(state=initialState, action) {
         }
       })
 
+    case types.RECEIVE_POSTS:
+      let lastTimestamp
+      if (action.posts.length>0) {
+        lastTimestamp = action.posts[action.posts.length-1].createdAt
+      } else {
+        lastTimestamp = Date.now()
+      }
+      return update(state, {
+        user: {
+          bins: {$apply: x => x.map(bin => {
+            if (bin.id==action.binId) {
+              bin.lastTimestamp = lastTimestamp
+            }
+            return bin
+          })} 
+        }
+      })
+      
+
     default:
       return state
   }

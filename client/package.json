@@ -4,7 +4,10 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "webpack-dev-server"
+    "webpack": "webpack --progress --colors",
+    "prod": "webpack -p --progress --colors",
+    "dev": "webpack-dev-server --progress --colors",
+    "start": "npm run dev"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +17,7 @@
     "history": "^1.17.0",
     "ionicons": "^3.0.0-alpha.3",
     "js-cookie": "^2.1.0",
+    "jsx-loader": "^0.13.2",
     "moment": "^2.11.0",
     "nib": "^1.1.0",
     "react": "^0.14.6",
@@ -26,6 +30,7 @@
     "redux": "^3.0.5",
     "redux-thunk": "^1.0.3",
     "reselect": "^2.0.2",
+    "static-site-generator-webpack-plugin": "^2.0.1",
     "style-loader": "^0.13.0",
     "stylus-loader": "^1.4.3",
     "url-loader": "^0.5.7",

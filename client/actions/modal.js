@@ -22,6 +22,7 @@ function requestMeta() {
 }
 
 function receiveMeta(url, meta, api="self") {
+  console.log('receive meta action', url, meta, api)
   return {
     type: types.RECEIVE_META,
     url,
@@ -49,6 +50,7 @@ export function fetchMeta (url) {
     dispatch(requestMeta())
 
     if (url.indexOf('imgur')>-1) {
+      console.log('fetching meta from imgur api')
       const isAlbum = url.indexOf('/a/')>-1
       const imgurId = getImgurId(url)
       return fetch(
@@ -65,24 +67,25 @@ export function fetchMeta (url) {
           }
         })
         .catch(error => {
-          dispatch(receiveMeta({}))
+          dispatch(receiveMeta(url, {}))
           console.log('error with fetch meta: ', error.message)
+        })
+    } else {
+      console.log('fetching meta from self api')
+      return fetch(apiUrl, options)
+        .then(response => response.json())
+        .then(json => {
+          if (json.ok=='true') {
+            dispatch(receiveMeta(url, json.data))
+          } else {
+            dispatch(receiveMeta(url, {}))
+          }
+        })
+        .catch(error => {
+          console.log('error with fetch meta: ', error.message)
+          dispatch(receiveMeta(url, {}))
         })
     }
 
-    return fetch(apiUrl, options)
-      .then(response => response.json())
-      .then(json => {
-        console.log('fetchMeta', url, json)
-        if (json.ok) {
-          dispatch(receiveMeta(url, json.data))
-        } else {
-          dispatch(receiveMeta(url, {}))
-        }
-      })
-      .catch(error => {
-        dispatch(receiveMeta({}))
-        console.log('error with fetch meta: ', error.message)
-      })
   }
 }

@@ -5,6 +5,7 @@ import Time from './Time'
 import Source from './Source'
 
 import {deletePost} from '../actions/posts'
+import {addProtocol} from '../helpers/utils'
 const closeImg = require('../static/images/close.svg')
 
 
@@ -40,14 +41,14 @@ class Post extends Component {
   }
   render() {
     const {dispatch, auth, post, reactions} = this.props
-    const {id, binId, title, url, mediaType, createdAt} = post
+    const {id, binId, title, url, mediaType, meta, createdAt} = post
 
     return (
       <div className='post post-style1'>
         {this.renderDelete()}
         
-        { title ? <div className="post-title-wrapper"><a href={this.processUrl(url)} className="post-title" target="_blank">{title}</a></div> : null }
-        { mediaType ? <Media mediaType={mediaType} url={url}/> : null }
+        { title ? <div className="post-title-wrapper"><a href={addProtocol(url) } className="post-title" target="_blank">{title}</a></div> : null }
+        { mediaType ? <Media meta={meta} mediaType={mediaType} url={url}/> : null }
         
         <div className="post-meta">
 

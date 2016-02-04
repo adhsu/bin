@@ -6,9 +6,11 @@ import {routeActions} from 'react-router-redux'
 import Popover from '../components/Popover'
 import {loginUser, logoutUser} from '../actions/auth'
 import NavLogoMenu from '../components/NavLogoMenu'
-import {_throttle, findById} from '../helpers/utils'
+import {findById, sortArr} from '../helpers/utils'
 import {popupTwitterLogin} from '../helpers/login'
 const lockImg = require('../static/images/locked.svg')
+const bookmarkImg = require('../static/images/bookmark.svg')
+const gearImg = require('../static/images/gear.svg')
 
 class Nav extends Component {
   constructor(props) {
@@ -18,10 +20,6 @@ class Nav extends Component {
     }
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    console.log('nav receives props ', this.props, nextProps)
   }
 
   login(e) {
@@ -139,15 +137,41 @@ class Nav extends Component {
 
         </Popover>
         
-        <Popover className='bin-invite' initiallyOpen={bin.firstTimeInBin}> 
-          <span className="bin-invite-link">
+        <Popover className='bin-option' initiallyOpen={bin.firstTimeInBin}> 
+          <span className="bin-option-link">
             <img src={lockImg} />
           </span>
-          <div className="bin-invite-popover popover-content">
+          <div className="bin-option-popover popover-content">
             <p>Invite a friend with this link:</p>
             <p className="bin-invite-url">{inviteLink}</p>
           </div>
         </Popover>
+
+        <Popover className='bin-option'> 
+          <span className="bin-option-link bin-settings-link">
+            <img src={gearImg} />
+          </span>
+          <div className="bin-option-popover bin-bookmark-popover popover-content">
+            <p>Drag this button to your bookmarks toolbar. Click it when you want to add something quickly to Bin!</p>
+            <a className="bin-bookmark-link" 
+              href={'javascript:(function() %7B open(%27http://127.0.0.1:3333/'+binId+'%3Fadd%3D%27%2BencodeURIComponent(document.location.href),%27_blank%27).focus()%3B %7D)()%3B'} 
+              onClick={e=>e.preventDefault()}>
+              Add to {binId} bin
+            </a>
+
+          </div>
+        </Popover>
+
+        {/* <Popover className='bin-option'> 
+          <span className="bin-option-link">
+            <a href='javascript:(function() %7B open(%27http://127.0.0.1:3333/fell%3Fadd%3D%27%2BencodeURIComponent(document.location.href),%27_self%27).focus()%3B %7D)()%3B' onClick={e=>e.preventDefault()}>
+              <img style="testing" src={bookmarkImg} />
+            </a>
+          </span>
+          <div className="bin-option-popover popover-content">
+            <p>Drag this bookmark to your bookmarks bar to bin things on the go.</p>
+          </div>
+        </Popover> */}
 
 
 

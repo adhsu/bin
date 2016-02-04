@@ -1,50 +1,38 @@
 import React, { Component, PropTypes } from 'react'
+import Popover from './Popover'
 import emojis from '../helpers/emojis-short'
 const addReactionImg = require('../static/images/add-reaction.png')
 
 export default class EmojiPicker extends Component {
-  constructor() {
-    super();
-    this.state = {
-      pickerIsOpen: false
-    }
-    this.togglePicker = this.togglePicker.bind(this)
-  }
-
+  
   handleClick(emojiId, event) {
     const {addReaction} = this.props
-    this.setState({pickerIsOpen:false})
     addReaction(emojiId)
-  }
-  
-  togglePicker() {
-    this.setState({pickerIsOpen:!this.state.pickerIsOpen})
+    this.refs.popover.handleOutsideClick()
   }
 
   render() {
     
     return (
-      <div className="emoji-picker-wrapper">
-        <div 
-          className={ this.state.pickerIsOpen ? 'emoji-picker-button active' : 'emoji-picker-button'}
-          onClick={this.togglePicker}>
+      <Popover className='emoji-picker-wrapper' ref="popover">
+        <div className='emoji-picker-button'>
           <img src={addReactionImg} />
         </div>
 
-        {this.state.pickerIsOpen ? (
-          <div className="emoji-list-wrapper">
-            {Object.keys(emojis).map(id => {
-              let boundHandleClick = this.handleClick.bind(this, id)
-              return (
-                <div key={id} className="emoji-list-item" onClick={boundHandleClick}>
-                  {emojis[id]}
-                </div>
-              )
-            })}
-          </div>
-        ) : null}
+        <div className="emoji-picker-popover popover-content">
+          {Object.keys(emojis).map(id => {
+            let boundHandleClick = this.handleClick.bind(this, id)
+            return (
+              <div key={id} className="emoji-list-item" onClick={boundHandleClick}>
+                {emojis[id]}
+              </div>
+            )
+          })}
+        </div>
 
-      </div>
+      </Popover>
+
+      
         
         
     )

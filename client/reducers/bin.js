@@ -5,7 +5,8 @@ const initialState = {
   checked: false,
   exists: false,
   firstTimeInBin: false,
-  error: ""
+  error: "",
+  lastTimestamp: null
 }
 
 export default function bin(state=initialState, action) {

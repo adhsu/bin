@@ -33,6 +33,12 @@ class Posts extends Component {
     const queryPaste = routing.location.query.add
     if (queryPaste) {
       dispatch(handlePaste(null, queryPaste))
+      const newHost = window.location.host+routing.location.pathname
+      if (history.pushState) {
+          var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname
+          window.history.pushState({path:newurl},'',newurl);
+      }
+
     }
 
     dispatch(updateUser({lastViewedBin: binId}))
@@ -93,15 +99,15 @@ class Posts extends Component {
     const {dispatch, auth, posts, params} = this.props
     const {binId} = params
     const bottom = scrolledToBottom(10)
-    
+    const lastTimestamp = findById(auth.user.bins, binId).lastTimestamp
     if (bottom && !posts[binId].isFetching && posts[binId].hasMore) { 
-      console.log('Called inf scroll')
+      console.log('Inf scroll')
       dispatch(fetchPosts(
         auth.token, 
         params.binId,
-        Date.now(), 
-        POSTS_PER_PAGE*posts[binId].page, // offset
-        POSTS_PER_PAGE // limit
+        lastTimestamp,
+        0,
+        POSTS_PER_PAGE
       ))      
     }
   }, 200);

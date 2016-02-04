@@ -9,7 +9,7 @@ class Home extends React.Component {
       return (
         <div>
           <p>Share pictures, videos, and links with your close friends.</p>
-          <p>Sign in with Twitter to use Bin.</p>
+          
         </div>
       )
     }

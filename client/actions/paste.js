@@ -1,23 +1,10 @@
 import {displayError} from '../actions/environment'
 import {changeModal} from '../actions/modal'
 
-function getMediaType (data) {
-  if (data.indexOf('youtube')!==-1) {
-    return 'youtube'
-  } else if (data.endsWith('gifv')!==-1 || data.endsWith('webm')!==-1) {
-    return 'video'
-  } else if (data.endsWith('jpg')!==-1 || data.endsWith('png')!==-1 || data.endsWith('jpeg')!==-1) {
-    return 'image'
-  } else if (data.endsWith('gif')!==-1) {
-    return 'gif'
-  } else {
-    return null
-  }
-}
-
 function validateUrl(data) {
   const isUrl = data.indexOf(" ")==-1 && data.split('.').length >=2
-  if (isUrl) {
+  const isSpotify = data.indexOf('spotify')>-1
+  if (isUrl || isSpotify) {
     return data
   } else {
     console.log('Not a valid url')

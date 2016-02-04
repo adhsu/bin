@@ -20,7 +20,9 @@ export function grabTitle(req, res){
         'ogTitle': client.ogTitle,
         'host': client.host,
         'image': client.image,
-        'ogImage': client.ogImage
+        'ogImage': client.ogImage,
+        'ogDescription': client.ogDescription,
+        'description': client.description
       }
     })
   })

@@ -66,6 +66,48 @@
   left 5px
   min-width 140px
 
+// bin bookmarklet popover
+.bin-option
+  display inline-block
+  
+  
+.bin-option-link
+  cursor pointer
+  display inline-block
+  width 16px
+  vertical-align top
+  margin-top 2px
+  margin-left 6px
+  img
+    width 100%
+    filter brightness(0) invert(1)
+    -webkit-filter brightness(0) invert(1)
+    opacity .25
+
+.bin-settings-link
+  width 20px
+  margin-top 3px
+  
+.bin-option-popover
+  color #333
+  font-size 14px
+  line-height 18px
+  padding 10px
+  min-width 200px
+  
+  p
+    margin 0
+    margin-bottom 6px
+    &:last-child
+      margin-bottom 0
+
+.bin-bookmark-popover
+  min-width 300px
+  
+.bin-invite-url
+  white-space nowrap
+  
+
 // bin invite popover
 .bin-invite
   display inline-block
@@ -96,3 +138,17 @@
 
 .bin-invite-url
   white-space nowrap
+
+.bin-bookmark-link
+  display inline-block
+  font-weight 500
+  padding 0 15px
+  background-color #1E824C
+  border-radius 3px
+  box-shadow 0 2px 0 darken(#1E824C, 25%)
+  line-height 36px
+  margin 6px 0
+  
+  &:hover
+    text-decoration none
+    background-color lighten(#1E824C, 10%)

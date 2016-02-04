@@ -36,6 +36,9 @@
   display inline-block
   vertical-align top
   height 42px
+  &.open
+    .emoji-picker-button
+      opacity 0.75
   
 .emoji-picker-button
   cursor pointer
@@ -48,11 +51,10 @@
     width 41px
     height 27px
   
-  &.active
   &:hover
     opacity 0.75
 
-.emoji-list-wrapper
+.emoji-picker-popover
   position absolute
   left 0
   top 100%

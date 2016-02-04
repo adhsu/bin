@@ -22,7 +22,6 @@ export function initAuth() {
 }
 
 export function loginUser(token) {
-  console.log('login with token',token)
   return dispatch => {
     Cookies.set(COOKIE_PATH, token)
     dispatch(fetchAuthedUser(token))
@@ -30,7 +29,6 @@ export function loginUser(token) {
 }
 
 export function logoutUser() {
-  console.log('log out')
   return dispatch => {
     Cookies.remove(COOKIE_PATH)
     dispatch(routeActions.push('/'))
