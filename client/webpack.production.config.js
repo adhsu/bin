@@ -1,17 +1,29 @@
-// configuration object
+var path = require('path');
+var webpack = require('webpack');
+
 module.exports = {
-  devtool: 'eval',
-  devServer: {
-    inline: true, // reload on the fly
-    port: 3333,
-    historyApiFallback: true
-  },
+  devtool: 'source-map',
 
   entry: './entry.js',
 
   output: {
-    path: './', // output to root path
-    filename: 'bundle.js' // bundled file
+    path: path.join(__dirname, 'public'),
+    filename: 'bundle.js',
+    publicPath: '/'
+  },
+  
+  plugins: [
+    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      minimize: true,
+      compress: {
+        warnings: false
+      }
+    })
+  ],
+  
+  resolve: {
+    extensions: ['', '.js', '.jsx']
   },
 
   module: {
