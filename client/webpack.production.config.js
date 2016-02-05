@@ -4,12 +4,12 @@ var webpack = require('webpack');
 module.exports = {
   devtool: 'source-map',
 
-  entry: './entry.js',
+  entry: './src/entry.js',
 
   output: {
     path: path.join(__dirname, 'public'),
     filename: 'bundle.js',
-    publicPath: '/'
+    publicPath: '/public/'
   },
   
   plugins: [

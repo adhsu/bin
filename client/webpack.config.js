@@ -1,18 +1,25 @@
+var path = require('path');
+
 // configuration object
 module.exports = {
   devtool: 'eval',
   devServer: {
-    inline: true, // reload on the fly
+    // inline: true, // reload on the fly
     port: 3333,
     historyApiFallback: true
   },
 
-  entry: './entry.js',
-
+  entry: './src/entry.js',
   output: {
-    path: './', // output to root path
-    filename: 'bundle.js' // bundled file
+    path: path.join(__dirname, 'public'),
+    filename: 'bundle.js',
+    publicPath: '/public/'
   },
+  
+  // output: {
+  //   path: 'public', // output to root path
+  //   filename: 'bundle.js' // bundled file
+  // },
 
   module: {
     loaders: [
