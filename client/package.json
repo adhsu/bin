@@ -2,7 +2,10 @@
   "name": "bin",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "engines": {
+    "node": "0.10.x"
+  },
+  "main": "src/entry.js",
   "scripts": {
     "postinstall": "webpack --config ./webpack.production.config.js --progress --colors",
     "dev": "webpack-dev-server --progress --colors",
