@@ -32,7 +32,8 @@ jwtOpts.issuer = "accounts.bin.io";
 jwtOpts.audience = "bin.io";
 
 
-const callbackURL = 'http://' + config.url + ':' + config.ports.http + '/auth/login/callback';
+// const callbackURL = 'http://' + config.url + ':' + config.ports.http + '/auth/login/callback';
+const callbackURL = "http://107.170.209.207/auth/login/callback"
 
 import Bin from './models/bins'
 import Post from './models/posts'
@@ -134,7 +135,7 @@ app.get('/auth/login/twitter', passport.authenticate('twitter', {session: false}
 app.get('/auth/login/callback/twitter', 
   passport.authenticate('twitter', {failureRedirect: '/'}),
   	function(req, res) {
-      res.redirect('http://127.0.0.1:3333/login?foo=bar&access_token='+req.user.token)
+      res.redirect('http://bin.cool.s3-website-us-west-1.amazonaws.com/login?access_token='+req.user.token)
   		// res.send("/user?access_token=" + req.user.token)
   	}
   )

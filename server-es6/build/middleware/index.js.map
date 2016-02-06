@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../server/middleware/index.js"],"names":[],"mappings":";;;;;;kBAEe,YAAW;AACzB,KAAI,SAAS,sBAAT;;;;AADqB,QAKlB,MAAP,CALyB;CAAX","file":"index.js","sourcesContent":["import { Router } from 'express';\n\nexport default function() {\n\tvar routes = Router();\n\n\t// add middleware here\n\n\treturn routes;\n}\n"]}

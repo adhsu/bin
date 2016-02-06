@@ -4,8 +4,11 @@
   "description": "Starter project for an ES6 RESTful Express API",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "rm -rf build && mkdir build",
+    "build-server": "babel -d ./build ./server -s",
+    "build": "npm run clean && npm run build-server",
+    "start": "node ./build/index.js",
+    "debug": "node --debug ./build/index.js"
   },
   "repository": {
     "type": "git",
@@ -39,5 +42,12 @@
   "keywords": [
     "bin",
     "server"
-  ]
+  ],
+  "devDependencies": {
+    "babel-cli": "^6.4.5",
+    "babel-preset-es2015": "^6.3.13"
+  },
+  "babel": {
+    "presets": ["es2015"]
+  }
 }

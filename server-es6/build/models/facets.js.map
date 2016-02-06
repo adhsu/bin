@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../server/models/facets.js"],"names":[],"mappings":";;;;;;AACA,IAAI,SAAS,EAAT;kBACW","file":"facets.js","sourcesContent":["// our example model is just an Array\nvar facets = [];\nexport default facets;\n"]}
